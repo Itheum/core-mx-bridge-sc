@@ -2,8 +2,10 @@
 
 multiversx_sc::imports!();
 
+pub mod admin;
 pub mod config;
 pub mod errors;
+pub mod macros;
 pub mod storage;
 
 #[multiversx_sc::contract]
