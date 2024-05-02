@@ -84,4 +84,8 @@ pub trait ConfigModule: storage::StorageModule {
     #[view(getContractState)]
     #[storage_mapper("contract_state")]
     fn contract_state(&self) -> SingleValueMapper<State>;
+
+    #[view(getRelayer)]
+    #[storage_mapper("relayer")]
+    fn relayer(&self) -> SingleValueMapper<ManagedAddress>;
 }

@@ -49,6 +49,12 @@ pub trait AdminModule: crate::config::ConfigModule + storage::StorageModule {
         }
     }
 
+    #[endpoint(setRelayer)]
+    fn set_relayer(&self, relayer: ManagedAddress) {
+        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        self.relayer().set(relayer);
+    }
+
     #[payable("*")]
     #[endpoint(addToLiquidity)]
     fn add_to_liquidity(&self) {
