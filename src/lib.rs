@@ -2,8 +2,12 @@
 
 multiversx_sc::imports!();
 
+pub mod config;
+pub mod errors;
+pub mod storage;
+
 #[multiversx_sc::contract]
-pub trait CoreMxBridgeSc {
+pub trait CoreMxBridgeSc: storage::StorageModule {
     #[init]
     fn init(&self) {}
 
