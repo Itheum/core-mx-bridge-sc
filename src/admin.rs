@@ -3,14 +3,16 @@ use crate::{
     errors::{
         ERR_ALREADY_ACTIVE, ERR_ALREADY_INACTIVE, ERR_NOT_PRIVILEGED, ERR_TOKEN_NOT_WHITELISTED,
     },
-    only_privileged, storage,
+    events, only_privileged, storage,
 };
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
 #[multiversx_sc::module]
-pub trait AdminModule: crate::config::ConfigModule + storage::StorageModule {
+pub trait AdminModule:
+    crate::config::ConfigModule + storage::StorageModule + events::EventsModule
+{
     #[endpoint(setContractStateActive)]
     fn set_contract_state_active(&self) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);
@@ -19,7 +21,7 @@ pub trait AdminModule: crate::config::ConfigModule + storage::StorageModule {
             ERR_ALREADY_ACTIVE
         );
         self.contract_state().set(State::Active);
-        // self.contract_state_event(State::Active);
+        self.set_contract_state_event(&State::Active);
     }
 
     #[endpoint(setContractStateInactive)]
@@ -30,12 +32,13 @@ pub trait AdminModule: crate::config::ConfigModule + storage::StorageModule {
             ERR_ALREADY_INACTIVE
         );
         self.contract_state().set(State::Inactive);
-        // self.contract_state_event(State::Inactive);
+        self.set_contract_state_event(&State::Inactive);
     }
 
     #[endpoint(addTokensToWhitelist)]
     fn add_tokens_to_whitelist(&self, tokens: MultiValueEncoded<TokenIdentifier>) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);
+        self.add_tokens_to_whitelist_event(&tokens.to_vec());
         for token in tokens.into_iter() {
             self.tokens_whitelist().insert(token);
         }
@@ -44,6 +47,7 @@ pub trait AdminModule: crate::config::ConfigModule + storage::StorageModule {
     #[endpoint(removeTokensFromWhitelist)]
     fn remove_tokens_from_whitelist(&self, tokens: MultiValueEncoded<TokenIdentifier>) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);
+        self.remove_tokens_from_whitelist_event(&tokens.to_vec());
         for token in tokens.into_iter() {
             self.tokens_whitelist().swap_remove(&token);
         }
@@ -52,6 +56,7 @@ pub trait AdminModule: crate::config::ConfigModule + storage::StorageModule {
     #[endpoint(setRelayer)]
     fn set_relayer(&self, relayer: ManagedAddress) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);
+        self.set_relayer_event(&relayer);
         self.relayer().set(relayer);
     }
 
@@ -67,6 +72,10 @@ pub trait AdminModule: crate::config::ConfigModule + storage::StorageModule {
             ERR_TOKEN_NOT_WHITELISTED
         );
 
+        let caller = self.blockchain().get_caller();
+
+        self.add_to_liquidity_event(&caller, &payment.token_identifier, &payment.amount);
+
         self.liquidity(&payment.token_identifier)
             .update(|value| *value += payment.amount);
     }
@@ -81,6 +90,8 @@ pub trait AdminModule: crate::config::ConfigModule + storage::StorageModule {
         );
 
         let caller = self.blockchain().get_caller();
+
+        self.remove_from_liquidity_event(&caller, &token_identifier, &amount);
 
         self.send()
             .direct_esdt(&caller, &token_identifier, 0u64, &amount);

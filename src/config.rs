@@ -1,7 +1,7 @@
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
-use crate::{errors::ERR_ALREADY_IN_STORAGE, storage};
+use crate::{errors::ERR_ALREADY_IN_STORAGE, events, storage};
 
 #[derive(
     TopEncode,
@@ -22,11 +22,11 @@ pub enum State {
 }
 
 #[multiversx_sc::module]
-pub trait ConfigModule: storage::StorageModule {
+pub trait ConfigModule: storage::StorageModule + events::EventsModule {
     #[only_owner]
     #[endpoint(setAdministrator)]
     fn set_administrator(&self, administrator: ManagedAddress) {
-        // self.set_administrator_event(&administrator);
+        self.set_administrator_event(&administrator);
 
         if !self.administrator().is_empty() {
             require!(

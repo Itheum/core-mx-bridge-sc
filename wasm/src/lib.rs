@@ -5,9 +5,9 @@
 ////////////////////////////////////////////////////
 
 // Init:                                 1
-// Endpoints:                            2
+// Endpoints:                           16
 // Async Callback (empty):               1
-// Total number of exported functions:   4
+// Total number of exported functions:  18
 
 #![no_std]
 #![allow(internal_features)]
@@ -21,7 +21,21 @@ multiversx_sc_wasm_adapter::endpoints! {
     (
         init => init
         upgrade => upgrade
+        sendToLiquidity => send_to_liquidity
+        sendFromLiquidity => send_from_liquidity
         getLiquidity => liquidity
+        setAdministrator => set_administrator
+        getAdministrator => administrator
+        getTokensWhitelist => tokens_whitelist
+        getContractState => contract_state
+        getRelayer => relayer
+        setContractStateActive => set_contract_state_active
+        setContractStateInactive => set_contract_state_inactive
+        addTokensToWhitelist => add_tokens_to_whitelist
+        removeTokensFromWhitelist => remove_tokens_from_whitelist
+        setRelayer => set_relayer
+        addToLiquidity => add_to_liquidity
+        removeFromLiquidity => remove_from_liquidity
     )
 }
 
