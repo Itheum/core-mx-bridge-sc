@@ -67,6 +67,9 @@ pub trait ConfigModule: storage::StorageModule {
         if self.administrator().is_empty() {
             is_ready = false;
         }
+        if self.relayer().is_empty() {
+            is_ready = false;
+        }
         if self.tokens_whitelist().is_empty() {
             is_ready = false;
         }
