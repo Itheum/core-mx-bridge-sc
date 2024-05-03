@@ -16,3 +16,14 @@ macro_rules! require_contract_ready {
         }
     };
 }
+
+#[macro_export]
+macro_rules! check_whitelist {
+    ($trait_self:expr,$address:expr, $error_msg:expr) => {
+        if $trait_self.is_whitelist_active() {
+            if !$trait_self.is_whitelisted($address) {
+                sc_panic!($error_msg);
+            }
+        }
+    };
+}

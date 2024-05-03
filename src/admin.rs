@@ -35,6 +35,41 @@ pub trait AdminModule:
         self.set_contract_state_event(&State::Inactive);
     }
 
+    #[endpoint(setWhitelistStateActive)]
+    fn set_whitelist_state_active(&self) {
+        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        require!(
+            self.whitelist_state().get() == State::Inactive,
+            ERR_ALREADY_ACTIVE
+        );
+        self.whitelist_state().set(State::Active);
+        self.set_whitelist_state_event(&State::Active);
+    }
+
+    #[endpoint(setDepositLimits)]
+    fn set_deposit_limits(
+        &self,
+        token_identifier: TokenIdentifier,
+        minimum: BigUint,
+        maximum: BigUint,
+    ) {
+        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        self.set_deposit_limits_event(&token_identifier, &minimum, &maximum);
+        self.minimum_deposit(&token_identifier).set(minimum);
+        self.maximum_deposit(&token_identifier).set(maximum);
+    }
+
+    #[endpoint(setWhitelistStateInactive)]
+    fn set_whitelist_state_inactive(&self) {
+        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        require!(
+            self.whitelist_state().get() == State::Active,
+            ERR_ALREADY_INACTIVE
+        );
+        self.whitelist_state().set(State::Inactive);
+        self.set_whitelist_state_event(&State::Inactive);
+    }
+
     #[endpoint(addTokensToWhitelist)]
     fn add_tokens_to_whitelist(&self, tokens: MultiValueEncoded<TokenIdentifier>) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);

@@ -38,6 +38,16 @@ pub trait ConfigModule: storage::StorageModule + events::EventsModule {
     }
 
     #[inline]
+    fn is_whitelisted(&self, address: &ManagedAddress) -> bool {
+        self.whitelist().contains(address)
+    }
+
+    #[inline]
+    fn is_whitelist_active(&self) -> bool {
+        self.is_state_active(self.whitelist_state().get())
+    }
+
+    #[inline]
     fn is_contract_owner(&self, address: &ManagedAddress) -> bool {
         &(self.blockchain().get_owner_address()) == address
     }
@@ -83,6 +93,12 @@ pub trait ConfigModule: storage::StorageModule + events::EventsModule {
     #[view(getTokensWhitelist)]
     #[storage_mapper("tokens_whitelist")]
     fn tokens_whitelist(&self) -> UnorderedSetMapper<TokenIdentifier>;
+
+    #[storage_mapper("whitelist")]
+    fn whitelist(&self) -> WhitelistMapper<ManagedAddress>;
+
+    #[storage_mapper("whitelist_state")]
+    fn whitelist_state(&self) -> SingleValueMapper<State>;
 
     #[view(getContractState)]
     #[storage_mapper("contract_state")]

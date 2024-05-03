@@ -52,4 +52,15 @@ pub trait EventsModule {
         #[indexed] token_identifier: &TokenIdentifier,
         #[indexed] amount: &BigUint,
     );
+
+    #[event("setWhitelistStateEvent")]
+    fn set_whitelist_state_event(&self, #[indexed] state: &State);
+
+    #[event("setDepositLimitsEvent")]
+    fn set_deposit_limits_event(
+        &self,
+        #[indexed] token_identifier: &TokenIdentifier,
+        #[indexed] minimum: &BigUint,
+        #[indexed] maximum: &BigUint,
+    );
 }

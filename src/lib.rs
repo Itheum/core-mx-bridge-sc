@@ -1,7 +1,8 @@
 #![no_std]
 
 use crate::errors::{
-    ERR_CONTRACT_NOT_READY, ERR_NOT_ENOUGH_LIQUIDITY, ERR_NOT_PRIVILEGED, ERR_TOKEN_NOT_WHITELISTED,
+    ERR_CONTRACT_NOT_READY, ERR_NOT_ENOUGH_LIQUIDITY, ERR_NOT_PRIVILEGED,
+    ERR_PAYMENT_AMOUNT_NOT_IN_ACCEPTED_RANGE, ERR_TOKEN_NOT_WHITELISTED,
 };
 
 multiversx_sc::imports!();
@@ -30,12 +31,20 @@ pub trait CoreMxBridgeSc:
     #[payable("*")]
     #[endpoint(sendToLiquidity)]
     fn send_to_liquidity(&self, extra_arguments: MultiValueEncoded<ManagedBuffer>) {
+        let caller = self.blockchain().get_caller();
         require_contract_ready!(self, ERR_CONTRACT_NOT_READY);
+        check_whitelist!(self, &caller, ERR_NOT_PRIVILEGED);
         let payment = self.call_value().single_esdt();
 
         require!(
             self.tokens_whitelist().contains(&payment.token_identifier),
             ERR_TOKEN_NOT_WHITELISTED
+        );
+
+        require!(
+            self.minimum_deposit(&payment.token_identifier).get() <= payment.amount
+                && payment.amount <= self.maximum_deposit(&payment.token_identifier).get(),
+            ERR_PAYMENT_AMOUNT_NOT_IN_ACCEPTED_RANGE
         );
 
         let caller = self.blockchain().get_caller();
