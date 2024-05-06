@@ -7,6 +7,10 @@ pub trait StorageModule {
     #[storage_mapper("liquidity")]
     fn liquidity(&self, token_identifier: &TokenIdentifier) -> SingleValueMapper<BigUint>;
 
+    #[view(getTokenDecimals)]
+    #[storage_mapper("token_decimals")]
+    fn token_decimals(&self, token_identifier: &TokenIdentifier) -> SingleValueMapper<u32>;
+
     #[view(getMinimumDeposit)]
     #[storage_mapper("minimum_deposit")]
     fn minimum_deposit(&self, token_identifier: &TokenIdentifier) -> SingleValueMapper<BigUint>;

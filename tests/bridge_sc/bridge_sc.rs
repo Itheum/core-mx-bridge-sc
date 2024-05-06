@@ -1,7 +1,10 @@
 use core_mx_bridge_sc::admin::ProxyTrait as _;
 use core_mx_bridge_sc::config::ProxyTrait as _;
 use core_mx_bridge_sc::ProxyTrait as _;
-use multiversx_sc::types::{Address, BigUint, MultiValueEncoded};
+use multiversx_sc::{
+    imports::MultiValue2,
+    types::{Address, BigUint, MultiValueEncoded},
+};
 use multiversx_sc_scenario::{
     api::StaticApi,
     managed_buffer, managed_token_id,
@@ -221,7 +224,7 @@ impl ContractState {
         let tx_expect = expect.unwrap_or(TxExpect::ok());
 
         let mut args = MultiValueEncoded::new();
-        args.push(managed_token_id!(token_identifier));
+        args.push(MultiValue2((managed_token_id!(token_identifier), 18u32)));
         self.world.sc_call(
             ScCallStep::new()
                 .from(caller)

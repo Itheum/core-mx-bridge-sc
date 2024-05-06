@@ -1,7 +1,7 @@
 #![no_std]
 
 use crate::errors::{
-    ERR_CONTRACT_NOT_READY, ERR_NOT_ENOUGH_LIQUIDITY, ERR_NOT_PRIVILEGED,
+    ERR_CONTRACT_NOT_READY, ERR_NOT_ENOUGH_LIQUIDITY, ERR_NOT_PRIVILEGED, ERR_NOT_WHOLE_NUMBER,
     ERR_PAYMENT_AMOUNT_NOT_IN_ACCEPTED_RANGE, ERR_TOKEN_NOT_WHITELISTED,
 };
 
@@ -13,10 +13,14 @@ pub mod errors;
 pub mod events;
 pub mod macros;
 pub mod storage;
-
+pub mod utils;
 #[multiversx_sc::contract]
 pub trait CoreMxBridgeSc:
-    storage::StorageModule + config::ConfigModule + admin::AdminModule + events::EventsModule
+    storage::StorageModule
+    + config::ConfigModule
+    + admin::AdminModule
+    + events::EventsModule
+    + utils::UtilsModule
 {
     #[init]
     fn init(&self) {
@@ -39,6 +43,14 @@ pub trait CoreMxBridgeSc:
         require!(
             self.tokens_whitelist().contains(&payment.token_identifier),
             ERR_TOKEN_NOT_WHITELISTED
+        );
+
+        require!(
+            self.check_amount(
+                &payment.amount,
+                self.token_decimals(&payment.token_identifier).get()
+            ),
+            ERR_NOT_WHOLE_NUMBER
         );
 
         require!(

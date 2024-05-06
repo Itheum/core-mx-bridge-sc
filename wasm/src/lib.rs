@@ -5,9 +5,9 @@
 ////////////////////////////////////////////////////
 
 // Init:                                 1
-// Endpoints:                           21
+// Endpoints:                           22
 // Async Callback (empty):               1
-// Total number of exported functions:  23
+// Total number of exported functions:  24
 
 #![no_std]
 #![allow(internal_features)]
@@ -24,6 +24,7 @@ multiversx_sc_wasm_adapter::endpoints! {
         sendToLiquidity => send_to_liquidity
         sendFromLiquidity => send_from_liquidity
         getLiquidity => liquidity
+        getTokenDecimals => token_decimals
         getMinimumDeposit => minimum_deposit
         getMaximumDeposit => maximum_deposit
         setAdministrator => set_administrator

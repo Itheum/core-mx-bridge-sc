@@ -71,11 +71,16 @@ pub trait AdminModule:
     }
 
     #[endpoint(addTokensToWhitelist)]
-    fn add_tokens_to_whitelist(&self, tokens: MultiValueEncoded<TokenIdentifier>) {
+    fn add_tokens_to_whitelist(
+        &self,
+        tokens: MultiValueEncoded<MultiValue2<TokenIdentifier, u32>>,
+    ) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);
-        self.add_tokens_to_whitelist_event(&tokens.to_vec());
+
         for token in tokens.into_iter() {
-            self.tokens_whitelist().insert(token);
+            let (token_identifier, token_decimals) = token.into_tuple();
+            self.token_decimals(&token_identifier).set(token_decimals);
+            self.tokens_whitelist().insert(token_identifier);
         }
     }
 
@@ -84,6 +89,7 @@ pub trait AdminModule:
         only_privileged!(self, ERR_NOT_PRIVILEGED);
         self.remove_tokens_from_whitelist_event(&tokens.to_vec());
         for token in tokens.into_iter() {
+            self.token_decimals(&token).clear();
             self.tokens_whitelist().swap_remove(&token);
         }
     }
