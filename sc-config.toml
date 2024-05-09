@@ -1,0 +1,2 @@
+[[proxy]]
+path = "src/core_mx_bridge_sc_proxy.rs"

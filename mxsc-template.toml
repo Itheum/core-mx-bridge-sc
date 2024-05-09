@@ -1,0 +1,3 @@
+name = "core-mx-bridge-sc"
+contract_trait = "CoreMxBridgeSc"
+src_file = "lib.rs"
