@@ -1,8 +1,8 @@
 use crate::{
     config::State,
     errors::{
-        ERR_ALREADY_ACTIVE, ERR_ALREADY_INACTIVE, ERR_NOT_PRIVILEGED, ERR_TOKEN_NOT_WHITELISTED,
-        ERR_WRONG_VALUES,
+        ERR_ADDRESS_ALREADY_WHITELISTED, ERR_ADDRESS_NOT_WHITELISTED, ERR_ALREADY_ACTIVE,
+        ERR_ALREADY_INACTIVE, ERR_NOT_PRIVILEGED, ERR_TOKEN_NOT_WHITELISTED, ERR_WRONG_VALUES,
     },
     events, only_privileged, storage,
 };
@@ -97,6 +97,30 @@ pub trait AdminModule:
         for token in tokens.into_iter() {
             self.token_decimals(&token).clear();
             self.tokens_whitelist().swap_remove(&token);
+        }
+    }
+
+    #[endpoint(addToWhitelist)]
+    fn add_to_whitelist(&self, addresses: MultiValueEncoded<ManagedAddress>) {
+        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        for address in addresses.into_iter() {
+            require!(
+                self.whitelist().contains(&address) == false,
+                ERR_ADDRESS_ALREADY_WHITELISTED
+            );
+            self.whitelist().add(&address);
+        }
+    }
+
+    #[endpoint(removeFromWhitelist)]
+    fn remove_from_whitelist(&self, addresses: MultiValueEncoded<ManagedAddress>) {
+        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        for address in addresses.into_iter() {
+            require!(
+                self.whitelist().contains(&address),
+                ERR_ADDRESS_NOT_WHITELISTED
+            );
+            self.whitelist().remove(&address);
         }
     }
 

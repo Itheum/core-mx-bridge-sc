@@ -1,8 +1,9 @@
 #![no_std]
 
 use crate::errors::{
-    ERR_CONTRACT_NOT_READY, ERR_NOT_ENOUGH_LIQUIDITY, ERR_NOT_PRIVILEGED, ERR_NOT_WHOLE_NUMBER,
-    ERR_PAYMENT_AMOUNT_NOT_IN_ACCEPTED_RANGE, ERR_TOKEN_NOT_WHITELISTED,
+    ERR_ADDRESS_NOT_WHITELISTED, ERR_CONTRACT_NOT_READY, ERR_NOT_ENOUGH_LIQUIDITY,
+    ERR_NOT_PRIVILEGED, ERR_NOT_WHOLE_NUMBER, ERR_PAYMENT_AMOUNT_NOT_IN_ACCEPTED_RANGE,
+    ERR_TOKEN_NOT_WHITELISTED,
 };
 
 multiversx_sc::imports!();
@@ -35,7 +36,7 @@ pub trait CoreMxBridgeSc:
     fn send_to_liquidity(&self, extra_arguments: MultiValueEncoded<ManagedBuffer>) {
         let caller = self.blockchain().get_caller();
         require_contract_ready!(self, ERR_CONTRACT_NOT_READY);
-        check_whitelist!(self, &caller, ERR_NOT_PRIVILEGED);
+        check_whitelist!(self, &caller, ERR_ADDRESS_NOT_WHITELISTED);
         let payment = self.call_value().single_esdt();
 
         require!(
@@ -56,8 +57,6 @@ pub trait CoreMxBridgeSc:
                 && payment.amount <= self.maximum_deposit(&payment.token_identifier).get(),
             ERR_PAYMENT_AMOUNT_NOT_IN_ACCEPTED_RANGE
         );
-
-        let caller = self.blockchain().get_caller();
 
         self.send_to_liquidity_event(
             &payment.token_identifier,
@@ -82,7 +81,7 @@ pub trait CoreMxBridgeSc:
         require!(self.relayer().get() == caller, ERR_NOT_PRIVILEGED);
 
         require!(
-            self.liquidity(&token_identifier).get() > amount,
+            self.liquidity(&token_identifier).get() >= amount,
             ERR_NOT_ENOUGH_LIQUIDITY
         );
 
