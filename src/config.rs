@@ -97,6 +97,7 @@ pub trait ConfigModule: storage::StorageModule + events::EventsModule {
     #[storage_mapper("whitelist")]
     fn whitelist(&self) -> WhitelistMapper<ManagedAddress>;
 
+    #[view(getWhitelistState)]
     #[storage_mapper("whitelist_state")]
     fn whitelist_state(&self) -> SingleValueMapper<State>;
 

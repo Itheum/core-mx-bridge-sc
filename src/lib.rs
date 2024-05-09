@@ -23,9 +23,7 @@ pub trait CoreMxBridgeSc:
     + utils::UtilsModule
 {
     #[init]
-    fn init(&self) {
-        self.set_contract_state_inactive();
-    }
+    fn init(&self) {}
 
     #[upgrade]
     fn upgrade(&self) {

@@ -7,3 +7,4 @@ pub const ERR_CONTRACT_NOT_READY: &str = "Contract not ready";
 pub const ERR_NOT_ENOUGH_LIQUIDITY: &str = "Not enough liquidity";
 pub const ERR_PAYMENT_AMOUNT_NOT_IN_ACCEPTED_RANGE: &str = "Payment amount not in accepted range";
 pub const ERR_NOT_WHOLE_NUMBER: &str = "Not a whole number";
+pub const ERR_WRONG_VALUES: &str = "Wrong values";
