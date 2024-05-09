@@ -1,0 +1,131 @@
+use multiversx_sc_scenario::imports::{
+    Account, CheckAccount, CheckStateStep, SetStateStep, TxExpect,
+};
+
+use crate::bridge_sc::bridge_sc::{
+    ContractState, ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR, BRIDGE_CONTRACT_ADDRESS_EXPR,
+    FIRST_USER_ADDRESS_EXPR, ITHEUM_TOKEN_IDENTIFIER, ITHEUM_TOKEN_IDENTIFIER_EXPR,
+    OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR,
+};
+
+#[test]
+fn send_to_bridge_test() {
+    let mut state = ContractState::new();
+    let first_user = state.first_user.clone();
+
+    state.deploy();
+
+    state.send_to_liquidity(
+        FIRST_USER_ADDRESS_EXPR,
+        (ITHEUM_TOKEN_IDENTIFIER_EXPR, 0u64, "1_000"),
+        vec![b"sol_address", b"sol_signature"],
+        Some(TxExpect::user_error("str:Contract not ready")),
+    );
+
+    state
+        .default_deploy_and_set()
+        .set_contract_state_active(OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR, None);
+
+    state.set_whitelist_state_active(OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR, None);
+
+    state.send_to_liquidity(
+        FIRST_USER_ADDRESS_EXPR,
+        (ITHEUM_TOKEN_IDENTIFIER_EXPR, 0u64, "1_000"),
+        vec![b"sol_address", b"sol_signature"],
+        Some(TxExpect::user_error("str:Address not whitelisted")),
+    );
+
+    state.add_to_whitelist(ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR, first_user.clone(), None);
+
+    state.send_to_liquidity(
+        FIRST_USER_ADDRESS_EXPR,
+        (ITHEUM_TOKEN_IDENTIFIER_EXPR, 0u64, "1_000"),
+        vec![b"sol_address", b"sol_signature"],
+        Some(TxExpect::user_error("str:Not a whole number")),
+    );
+
+    state.send_to_liquidity(
+        FIRST_USER_ADDRESS_EXPR,
+        (ITHEUM_TOKEN_IDENTIFIER_EXPR, 0u64, "1_000"),
+        vec![b"sol_address", b"sol_signature"],
+        Some(TxExpect::user_error("str:Not a whole number")),
+    );
+
+    state.world.set_state_step(
+        SetStateStep::new().put_account(
+            FIRST_USER_ADDRESS_EXPR,
+            Account::new()
+                .nonce(1)
+                .esdt_balance(ITHEUM_TOKEN_IDENTIFIER_EXPR, "1_100_000_000_000_000_000"),
+        ),
+    );
+
+    state.send_to_liquidity(
+        FIRST_USER_ADDRESS_EXPR,
+        (
+            ITHEUM_TOKEN_IDENTIFIER_EXPR,
+            0u64,
+            "1_000_000_000_000_000_000",
+        ),
+        vec![b"sol_address", b"sol_signature"],
+        Some(TxExpect::user_error(
+            "str:Payment amount not in accepted range",
+        )),
+    );
+
+    state.send_to_liquidity(
+        FIRST_USER_ADDRESS_EXPR,
+        (
+            ITHEUM_TOKEN_IDENTIFIER_EXPR,
+            0u64,
+            "1_000_000_000_000_000_000",
+        ),
+        vec![b"sol_address", b"sol_signature"],
+        Some(TxExpect::user_error(
+            "str:Payment amount not in accepted range",
+        )),
+    );
+    state.set_deposit_limits(
+        OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR,
+        ITHEUM_TOKEN_IDENTIFIER,
+        b"0",
+        b"100000000000000000000", // 100 tokens
+        None,
+    );
+
+    state.send_to_liquidity(
+        FIRST_USER_ADDRESS_EXPR,
+        (
+            ITHEUM_TOKEN_IDENTIFIER_EXPR,
+            0u64,
+            "1_100_000_000_000_000_000",
+        ),
+        vec![b"sol_address", b"sol_signature"],
+        Some(TxExpect::user_error("str:Not a whole number")),
+    );
+
+    state.send_to_liquidity(
+        FIRST_USER_ADDRESS_EXPR,
+        (
+            ITHEUM_TOKEN_IDENTIFIER_EXPR,
+            0u64,
+            "1_000_000_000_000_000_000",
+        ),
+        vec![b"sol_address", b"sol_signature"],
+        None,
+    );
+
+    state.world.check_state_step(
+        CheckStateStep::new()
+            .put_account(
+                BRIDGE_CONTRACT_ADDRESS_EXPR,
+                CheckAccount::new()
+                    .esdt_balance(ITHEUM_TOKEN_IDENTIFIER_EXPR, "1_000_000_000_000_000_000"),
+            )
+            .put_account(
+                FIRST_USER_ADDRESS_EXPR,
+                CheckAccount::new()
+                    .esdt_balance(ITHEUM_TOKEN_IDENTIFIER_EXPR, "100_000_000_000_000_000"),
+            ),
+    );
+}

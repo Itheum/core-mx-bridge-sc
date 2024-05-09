@@ -6,9 +6,9 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                           22
+// Endpoints:                           24
 // Async Callback (empty):               1
-// Total number of exported functions:  25
+// Total number of exported functions:  27
 
 #![no_std]
 #![allow(internal_features)]
@@ -41,6 +41,8 @@ multiversx_sc_wasm_adapter::endpoints! {
         setDepositLimits => set_deposit_limits
         addTokensToWhitelist => add_tokens_to_whitelist
         removeTokensFromWhitelist => remove_tokens_from_whitelist
+        addToWhitelist => add_to_whitelist
+        removeFromWhitelist => remove_from_whitelist
         setRelayer => set_relayer
         addToLiquidity => add_to_liquidity
         removeFromLiquidity => remove_from_liquidity

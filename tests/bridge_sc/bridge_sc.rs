@@ -6,6 +6,7 @@ use multiversx_sc::{
     imports::MultiValue2,
     types::{Address, BigUint, MultiValueEncoded},
 };
+use multiversx_sc_scenario::managed_address;
 use multiversx_sc_scenario::scenario_model::ScQueryStep;
 use multiversx_sc_scenario::{
     api::StaticApi,
@@ -256,12 +257,52 @@ impl ContractState {
         self
     }
 
+    pub fn add_to_whitelist(
+        &mut self,
+        caller: &str,
+        address: Address,
+        expect: Option<TxExpect>,
+    ) -> &mut Self {
+        let tx_expect = expect.unwrap_or(TxExpect::ok());
+
+        let mut addresses = MultiValueEncoded::new();
+        addresses.push(managed_address!(&address));
+
+        self.world.sc_call(
+            ScCallStep::new()
+                .from(caller)
+                .call(self.contract.add_to_whitelist(addresses))
+                .expect(tx_expect),
+        );
+        self
+    }
+
+    pub fn remove_from_whitelist(
+        &mut self,
+        caller: &str,
+        address: Address,
+        expect: Option<TxExpect>,
+    ) -> &mut Self {
+        let tx_expect = expect.unwrap_or(TxExpect::ok());
+
+        let mut addresses = MultiValueEncoded::new();
+        addresses.push(managed_address!(&address));
+
+        self.world.sc_call(
+            ScCallStep::new()
+                .from(caller)
+                .call(self.contract.remove_from_whitelist(addresses))
+                .expect(tx_expect),
+        );
+        self
+    }
+
     pub fn set_deposit_limits(
         &mut self,
         caller: &str,
         token_identifier: &[u8],
-        min_deposit: u64,
-        max_deposit: u64,
+        min_deposit: &[u8],
+        max_deposit: &[u8],
         expect: Option<TxExpect>,
     ) -> &mut Self {
         let tx_expect = expect.unwrap_or(TxExpect::ok());
@@ -271,8 +312,8 @@ impl ContractState {
                 .from(caller)
                 .call(self.contract.set_deposit_limits(
                     managed_token_id!(token_identifier),
-                    BigUint::from(min_deposit),
-                    BigUint::from(max_deposit),
+                    BigUint::from(managed_buffer!(min_deposit)),
+                    BigUint::from(managed_buffer!(max_deposit)),
                 ))
                 .expect(tx_expect),
         );
@@ -359,7 +400,7 @@ impl ContractState {
     pub fn send_to_liquidity(
         &mut self,
         caller: &str,
-        payment: (&str, u64, u64),
+        payment: (&str, u64, &str),
         extra_arguments: Vec<&[u8]>,
         expect: Option<TxExpect>,
     ) -> &mut Self {

@@ -1,5 +1,4 @@
 use core_mx_bridge_sc::{
-    admin::ProxyTrait as _,
     config::{ProxyTrait as _, State},
     storage::ProxyTrait as _,
 };
@@ -46,7 +45,6 @@ fn pause_unpause_test() {
 
 fn whitelist_active_inactive_test() {
     let mut state = ContractState::new();
-    let admin = state.admin.clone();
 
     state.default_deploy_and_set();
 
@@ -84,8 +82,8 @@ fn set_deposit_limits_test() {
     state.set_deposit_limits(
         ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
         ITHEUM_TOKEN_IDENTIFIER,
-        10u64,
-        20u64,
+        b"10",
+        b"20",
         Some(TxExpect::user_error("str:Token not whitelisted")),
     );
 
@@ -98,24 +96,24 @@ fn set_deposit_limits_test() {
     state.set_deposit_limits(
         ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
         ITHEUM_TOKEN_IDENTIFIER,
-        20u64,
-        10u64,
+        b"20",
+        b"10",
         Some(TxExpect::user_error("str:Wrong values")),
     );
 
     state.set_deposit_limits(
         FIRST_USER_ADDRESS_EXPR,
         ITHEUM_TOKEN_IDENTIFIER,
-        10u64,
-        20u64,
+        b"10",
+        b"20",
         Some(TxExpect::user_error("str:Not privileged")),
     );
 
     state.set_deposit_limits(
         ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
         ITHEUM_TOKEN_IDENTIFIER,
-        0u64,
-        10u64,
+        b"0",
+        b"10",
         None,
     );
 }

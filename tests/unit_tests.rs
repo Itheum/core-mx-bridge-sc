@@ -5,13 +5,10 @@ use core_mx_bridge_sc::{
     config::{ConfigModule, State},
     utils::UtilsModule,
 };
-use multiversx_sc::{
-    imports::MultiValue2,
-    types::{BigUint, MultiValueEncoded, TokenIdentifier},
-};
+use multiversx_sc::types::{BigUint, TokenIdentifier};
 use multiversx_sc_scenario::{
     api::SingleTxApi,
-    managed_address, managed_token_id,
+    managed_address,
     scenario_model::{AddressValue, TxExpect},
 };
 
