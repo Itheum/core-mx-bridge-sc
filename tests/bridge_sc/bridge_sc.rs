@@ -1,14 +1,15 @@
-use core_mx_bridge_sc::admin::ProxyTrait as _;
 use core_mx_bridge_sc::config::ProxyTrait as _;
 use core_mx_bridge_sc::ProxyTrait as _;
+use core_mx_bridge_sc::{admin::ProxyTrait as _, config::State};
+use multiversx_sc::imports::SingleValue;
 use multiversx_sc::{
     imports::MultiValue2,
     types::{Address, BigUint, MultiValueEncoded},
 };
+use multiversx_sc_scenario::scenario_model::ScQueryStep;
 use multiversx_sc_scenario::{
     api::StaticApi,
     managed_buffer, managed_token_id,
-    multiversx_chain_vm::world_mock::BlockInfo,
     scenario_model::{
         Account, AddressValue, BigUintValue, ScCallStep, ScDeployStep, SetStateStep, TxExpect,
     },
@@ -19,16 +20,17 @@ pub const BRIDGE_CONTRACT_PATH: &str = "mxsc:output/core=mx-bridge-sc-mxsc.json"
 
 pub const BRIDGE_CONTRACT_ADDRESS_EXPR: &str = "sc:bridge-sc";
 
-pub const OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR: &str = "sc:owner-bridge-sc";
+pub const OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR: &str = "address:owner-bridge-sc";
 
-pub const ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR: &str = "sc:admin-bridge-sc";
+pub const ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR: &str = "address:admin-bridge-sc";
 
-pub const RELAYER_BRIDGE_CONTRACT_ADDRESS_EXPR: &str = "sc:relayer-bridge-sc";
+pub const RELAYER_BRIDGE_CONTRACT_ADDRESS_EXPR: &str = "address:relayer-bridge-sc";
 
 pub const ITHEUM_TOKEN_IDENTIFIER_EXPR: &str = "str:ITHEUM-fce905";
 pub const ITHEUM_TOKEN_IDENTIFIER: &[u8] = b"ITHEUM-fce905";
 
 pub const ANOTHER_TOKEN_IDENTIFIER_EXPR: &str = "str:ANOTHER-fce905";
+pub const ANOTHER_TOKEN_IDENTIFIER: &[u8] = b"ANOTHER-fce905";
 
 pub const FIRST_USER_ADDRESS_EXPR: &str = "address:first_user";
 pub const SECOND_USER_ADDRESS_EXPR: &str = "address:second_user";
@@ -153,6 +155,15 @@ impl ContractState {
         self
     }
 
+    pub fn check_contract_state(&mut self, contract_state: State) -> &mut Self {
+        self.world.sc_query(
+            ScQueryStep::new()
+                .call(self.contract.contract_state())
+                .expect_value(SingleValue::from(contract_state)),
+        );
+        self
+    }
+
     pub fn set_administrator(
         &mut self,
         caller: &str,
@@ -210,6 +221,59 @@ impl ContractState {
             ScCallStep::new()
                 .from(caller)
                 .call(self.contract.set_contract_state_inactive())
+                .expect(tx_expect),
+        );
+        self
+    }
+
+    pub fn set_whitelist_state_active(
+        &mut self,
+        caller: &str,
+        expect: Option<TxExpect>,
+    ) -> &mut Self {
+        let tx_expect = expect.unwrap_or(TxExpect::ok());
+        self.world.sc_call(
+            ScCallStep::new()
+                .from(caller)
+                .call(self.contract.set_whitelist_state_active())
+                .expect(tx_expect),
+        );
+        self
+    }
+
+    pub fn set_whitelist_state_inactive(
+        &mut self,
+        caller: &str,
+        expect: Option<TxExpect>,
+    ) -> &mut Self {
+        let tx_expect = expect.unwrap_or(TxExpect::ok());
+        self.world.sc_call(
+            ScCallStep::new()
+                .from(caller)
+                .call(self.contract.set_whitelist_state_inactive())
+                .expect(tx_expect),
+        );
+        self
+    }
+
+    pub fn set_deposit_limits(
+        &mut self,
+        caller: &str,
+        token_identifier: &[u8],
+        min_deposit: u64,
+        max_deposit: u64,
+        expect: Option<TxExpect>,
+    ) -> &mut Self {
+        let tx_expect = expect.unwrap_or(TxExpect::ok());
+
+        self.world.sc_call(
+            ScCallStep::new()
+                .from(caller)
+                .call(self.contract.set_deposit_limits(
+                    managed_token_id!(token_identifier),
+                    BigUint::from(min_deposit),
+                    BigUint::from(max_deposit),
+                ))
                 .expect(tx_expect),
         );
         self
