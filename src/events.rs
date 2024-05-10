@@ -14,7 +14,7 @@ pub trait EventsModule {
         #[indexed] destination_signature: &ManagedBuffer,
     );
 
-    #[event("sendFromLiquidtyEvent")]
+    #[event("sendFromLiquidityEvent")]
     fn send_from_liquidity_event(
         &self,
         #[indexed] relayer: &ManagedAddress,
@@ -38,7 +38,7 @@ pub trait EventsModule {
     #[event("setRelayerEvent")]
     fn set_relayer_event(&self, #[indexed] relayer: &ManagedAddress);
 
-    #[event("addToLiquidtyEvent")]
+    #[event("addToLiquidityEvent")]
     fn add_to_liquidity_event(
         &self,
         #[indexed] address: &ManagedAddress,
@@ -46,7 +46,7 @@ pub trait EventsModule {
         #[indexed] amount: &BigUint,
     );
 
-    #[event("removeFromLiquidtyEvent")]
+    #[event("removeFromLiquidityEvent")]
     fn remove_from_liquidity_event(
         &self,
         #[indexed] address: &ManagedAddress,
