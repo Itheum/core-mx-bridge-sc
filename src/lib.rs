@@ -79,7 +79,7 @@ pub trait CoreMxBridgeSc:
         &self,
         token_identifier: TokenIdentifier,
         amount: BigUint,
-        address: ManagedAddress,
+        receiver: ManagedAddress,
     ) {
         require_contract_ready!(self, ERR_CONTRACT_NOT_READY);
         let caller = self.blockchain().get_caller();
@@ -90,10 +90,15 @@ pub trait CoreMxBridgeSc:
             ERR_NOT_ENOUGH_LIQUIDITY
         );
 
-        self.send_from_liquidity_event(&self.relayer().get(), &token_identifier, &amount, &address);
+        self.send_from_liquidity_event(
+            &self.relayer().get(),
+            &token_identifier,
+            &amount,
+            &receiver,
+        );
 
         self.send()
-            .direct_esdt(&address, &token_identifier, 0u64, &amount);
+            .direct_esdt(&receiver, &token_identifier, 0u64, &amount);
 
         self.liquidity(&token_identifier)
             .update(|value| *value -= amount);
