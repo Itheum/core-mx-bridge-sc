@@ -406,16 +406,14 @@ impl ContractState {
     ) -> &mut Self {
         let tx_expect = expect.unwrap_or(TxExpect::ok());
 
-        let mut args = MultiValueEncoded::new();
-        for arg in extra_arguments {
-            args.push(managed_buffer!(arg));
-        }
-
         self.world.sc_call(
             ScCallStep::new()
                 .from(caller)
                 .esdt_transfer(payment.0, payment.1, BigUintValue::from(payment.2))
-                .call(self.contract.send_to_liquidity(args))
+                .call(
+                    self.contract
+                        .send_to_liquidity(extra_arguments[0], extra_arguments[1]),
+                )
                 .expect(tx_expect),
         );
 

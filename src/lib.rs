@@ -33,7 +33,11 @@ pub trait CoreMxBridgeSc:
 
     #[payable("*")]
     #[endpoint(sendToLiquidity)]
-    fn send_to_liquidity(&self, extra_arguments: MultiValueEncoded<ManagedBuffer>) {
+    fn send_to_liquidity(
+        &self,
+        destination_address: ManagedBuffer,
+        destination_signature: ManagedBuffer,
+    ) {
         let caller = self.blockchain().get_caller();
         require_contract_ready!(self, ERR_CONTRACT_NOT_READY);
         check_whitelist!(self, &caller, ERR_ADDRESS_NOT_WHITELISTED);
@@ -62,7 +66,8 @@ pub trait CoreMxBridgeSc:
             &payment.token_identifier,
             &payment.amount,
             &caller,
-            extra_arguments.into_vec_of_buffers(),
+            &destination_address,
+            &destination_signature,
         );
 
         self.liquidity(&payment.token_identifier)

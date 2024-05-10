@@ -10,7 +10,8 @@ pub trait EventsModule {
         #[indexed] token_identifier: &TokenIdentifier,
         #[indexed] amount: &BigUint,
         #[indexed] address: &ManagedAddress,
-        #[indexed] args: ManagedVec<ManagedBuffer>,
+        #[indexed] destination_address: &ManagedBuffer,
+        #[indexed] destination_signature: &ManagedBuffer,
     );
 
     #[event("sendFromLiquidtyEvent")]
