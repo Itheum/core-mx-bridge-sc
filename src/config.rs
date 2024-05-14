@@ -58,6 +58,11 @@ pub trait ConfigModule: storage::StorageModule + events::EventsModule {
     }
 
     #[inline]
+    fn is_relayer(&self, address: &ManagedAddress) -> bool {
+        &(self.relayer().get()) == address
+    }
+
+    #[inline]
     fn is_privileged(&self, address: &ManagedAddress) -> bool {
         self.is_contract_owner(address) || self.is_admin(address)
     }

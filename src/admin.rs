@@ -16,7 +16,12 @@ pub trait AdminModule:
 {
     #[endpoint(setContractStateActive)]
     fn set_contract_state_active(&self) {
-        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        let caller = self.blockchain().get_caller();
+
+        require!(
+            self.is_privileged(&caller) || self.is_relayer(&caller),
+            ERR_NOT_PRIVILEGED
+        );
         require!(
             self.contract_state().get() == State::Inactive,
             ERR_ALREADY_ACTIVE
@@ -27,7 +32,12 @@ pub trait AdminModule:
 
     #[endpoint(setContractStateInactive)]
     fn set_contract_state_inactive(&self) {
-        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        let caller = self.blockchain().get_caller();
+
+        require!(
+            self.is_privileged(&caller) || self.is_relayer(&caller),
+            ERR_NOT_PRIVILEGED
+        );
         require!(
             self.contract_state().get() == State::Active,
             ERR_ALREADY_INACTIVE

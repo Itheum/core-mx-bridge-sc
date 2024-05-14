@@ -21,11 +21,14 @@ use crate::bridge_sc::bridge_sc::{
 fn pause_unpause_test() {
     let mut state = ContractState::new();
     let admin = state.admin.clone();
-    state.deploy().set_administrator(
-        OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR,
-        admin,
-        Some(TxExpect::ok()),
-    );
+    state
+        .deploy()
+        .set_administrator(
+            OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR,
+            admin.clone(),
+            Some(TxExpect::ok()),
+        )
+        .set_relayer(OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR, admin.clone(), None);
 
     state.check_contract_state(State::Inactive);
 
