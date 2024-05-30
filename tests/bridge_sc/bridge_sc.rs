@@ -139,6 +139,16 @@ impl ContractState {
                 OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR,
                 AddressValue::from(RELAYER_BRIDGE_CONTRACT_ADDRESS_EXPR).to_address(),
                 None,
+            )
+            .set_fee_collector(
+                OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR,
+                AddressValue::from(RELAYER_BRIDGE_CONTRACT_ADDRESS_EXPR).to_address(),
+                None,
+            )
+            .set_wegld_contract_address(
+                OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR,
+                AddressValue::from(RELAYER_BRIDGE_CONTRACT_ADDRESS_EXPR).to_address(),
+                None,
             );
 
         self
@@ -315,6 +325,43 @@ impl ContractState {
                     BigUint::from(managed_buffer!(min_deposit)),
                     BigUint::from(managed_buffer!(max_deposit)),
                 ))
+                .expect(tx_expect),
+        );
+        self
+    }
+
+    pub fn set_fee_collector(
+        &mut self,
+        caller: &str,
+        fee_collector: Address,
+        expect: Option<TxExpect>,
+    ) -> &mut Self {
+        let tx_expect = expect.unwrap_or(TxExpect::ok());
+
+        self.world.sc_call(
+            ScCallStep::new()
+                .from(caller)
+                .call(self.contract.set_fee_collector(fee_collector))
+                .expect(tx_expect),
+        );
+        self
+    }
+
+    pub fn set_wegld_contract_address(
+        &mut self,
+        caller: &str,
+        wegld_contract_address: Address,
+        expect: Option<TxExpect>,
+    ) -> &mut Self {
+        let tx_expect = expect.unwrap_or(TxExpect::ok());
+
+        self.world.sc_call(
+            ScCallStep::new()
+                .from(caller)
+                .call(
+                    self.contract
+                        .set_wegld_contract_address(wegld_contract_address),
+                )
                 .expect(tx_expect),
         );
         self

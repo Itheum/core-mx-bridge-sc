@@ -86,6 +86,26 @@ pub trait AdminModule:
         self.maximum_deposit(&token_identifier).set(maximum);
     }
 
+    #[endpoint(setFeeCollector)]
+    fn set_fee_collector(&self, fee_collector: ManagedAddress) {
+        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        self.set_fee_collector_event(&fee_collector);
+        self.fee_colector().set(fee_collector);
+    }
+
+    #[endpoint(setFeeValue)]
+    fn set_fee_value(&self, fee_value: BigUint) {
+        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        self.fee_value().set(fee_value);
+    }
+
+    #[endpoint(setWegldContractAddress)]
+    fn set_wegld_contract_address(&self, wegld_contract_address: ManagedAddress) {
+        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        self.set_wegld_contract_address_event(&wegld_contract_address);
+        self.wegld_contract_address().set(wegld_contract_address);
+    }
+
     #[endpoint(addTokensToWhitelist)]
     fn add_tokens_to_whitelist(
         &self,

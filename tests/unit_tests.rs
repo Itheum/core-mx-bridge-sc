@@ -3,6 +3,7 @@ use bridge_sc::bridge_sc::{
 };
 use core_mx_bridge_sc::{
     config::{ConfigModule, State},
+    storage::StorageModule,
     utils::UtilsModule,
 };
 use multiversx_sc::types::{BigUint, TokenIdentifier};
@@ -81,6 +82,28 @@ fn contract_is_ready_test() {
     bridge_sc
         .tokens_whitelist()
         .insert(TokenIdentifier::from(ITHEUM_TOKEN_IDENTIFIER));
+
+    check = bridge_sc.contract_is_ready();
+
+    assert_eq!(check, false);
+
+    bridge_sc
+        .fee_colector()
+        .set(managed_address!(&AddressValue::from(
+            ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR
+        )
+        .to_address()));
+
+    check = bridge_sc.contract_is_ready();
+
+    assert_eq!(check, false);
+
+    bridge_sc
+        .wegld_contract_address()
+        .set(managed_address!(&AddressValue::from(
+            ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR
+        )
+        .to_address()));
 
     check = bridge_sc.contract_is_ready();
 

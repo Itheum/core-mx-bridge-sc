@@ -82,6 +82,15 @@ pub trait ConfigModule: storage::StorageModule + events::EventsModule {
         if self.administrator().is_empty() {
             is_ready = false;
         }
+
+        if self.fee_colector().is_empty() {
+            is_ready = false;
+        }
+
+        if self.wegld_contract_address().is_empty() {
+            is_ready = false;
+        }
+
         if self.relayer().is_empty() {
             is_ready = false;
         }
