@@ -97,19 +97,6 @@ pub trait CoreMxBridgeSc:
                 ERR_TOKEN_NOT_WHITELISTED
             );
 
-            let back_transfers = self
-                .tx()
-                .to(&self.wegld_contract_address().get())
-                .typed(wegld_proxy::EgldEsdtSwapProxy)
-                .unwrap_egld()
-                .returns(ReturnsBackTransfers)
-                .sync_call();
-
-            self.send().direct_egld(
-                &self.fee_colector().get(),
-                &back_transfers.total_egld_amount,
-            );
-
             require!(
                 self.tokens_whitelist().contains(&deposit.token_identifier),
                 ERR_TOKEN_NOT_WHITELISTED
@@ -127,6 +114,19 @@ pub trait CoreMxBridgeSc:
                 self.minimum_deposit(&deposit.token_identifier).get() <= deposit.amount
                     && deposit.amount <= self.maximum_deposit(&deposit.token_identifier).get(),
                 ERR_PAYMENT_AMOUNT_NOT_IN_ACCEPTED_RANGE
+            );
+
+            let back_transfers = self
+                .tx()
+                .to(&self.wegld_contract_address().get())
+                .typed(wegld_proxy::EgldEsdtSwapProxy)
+                .unwrap_egld()
+                .returns(ReturnsBackTransfers)
+                .sync_call();
+
+            self.send().direct_egld(
+                &self.fee_colector().get(),
+                &back_transfers.total_egld_amount,
             );
 
             self.send_to_liquidity_event(
