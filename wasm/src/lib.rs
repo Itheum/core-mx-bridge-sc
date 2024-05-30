@@ -6,13 +6,11 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                           24
+// Endpoints:                           30
 // Async Callback (empty):               1
-// Total number of exported functions:  27
+// Total number of exported functions:  33
 
 #![no_std]
-#![allow(internal_features)]
-#![feature(lang_items)]
 
 multiversx_sc_wasm_adapter::allocator!();
 multiversx_sc_wasm_adapter::panic_handler!();
@@ -28,6 +26,9 @@ multiversx_sc_wasm_adapter::endpoints! {
         getTokenDecimals => token_decimals
         getMinimumDeposit => minimum_deposit
         getMaximumDeposit => maximum_deposit
+        getFeeCollector => fee_colector
+        getFeeValue => fee_value
+        getWegldContractAddress => wegld_contract_address
         setAdministrator => set_administrator
         getAdministrator => administrator
         getTokensWhitelist => tokens_whitelist
@@ -39,6 +40,9 @@ multiversx_sc_wasm_adapter::endpoints! {
         setWhitelistStateActive => set_whitelist_state_active
         setWhitelistStateInactive => set_whitelist_state_inactive
         setDepositLimits => set_deposit_limits
+        setFeeCollector => set_fee_collector
+        setFeeValue => set_fee_value
+        setWegldContractAddress => set_wegld_contract_address
         addTokensToWhitelist => add_tokens_to_whitelist
         removeTokensFromWhitelist => remove_tokens_from_whitelist
         addToWhitelist => add_to_whitelist
