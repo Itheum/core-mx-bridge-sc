@@ -83,7 +83,7 @@ pub trait ConfigModule: storage::StorageModule + events::EventsModule {
             is_ready = false;
         }
 
-        if self.fee_colector().is_empty() {
+        if self.fee_collector().is_empty() {
             is_ready = false;
         }
 

@@ -26,7 +26,7 @@ multiversx_sc_wasm_adapter::endpoints! {
         getTokenDecimals => token_decimals
         getMinimumDeposit => minimum_deposit
         getMaximumDeposit => maximum_deposit
-        getFeeCollector => fee_colector
+        getFeeCollector => fee_collector
         getFeeValue => fee_value
         getWegldContractAddress => wegld_contract_address
         setAdministrator => set_administrator

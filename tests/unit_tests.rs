@@ -88,7 +88,7 @@ fn contract_is_ready_test() {
     assert_eq!(check, false);
 
     bridge_sc
-        .fee_colector()
+        .fee_collector()
         .set(managed_address!(&AddressValue::from(
             ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR
         )

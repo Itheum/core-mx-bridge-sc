@@ -10,3 +10,4 @@ pub const ERR_NOT_WHOLE_NUMBER: &str = "Not a whole number";
 pub const ERR_WRONG_VALUES: &str = "Wrong values";
 pub const ERR_ADDRESS_NOT_WHITELISTED: &str = "Address not whitelisted";
 pub const ERR_ADDRESS_ALREADY_WHITELISTED: &str = "Address already whitelisted";
+pub const ERR_WRONG_FEE_TOKEN_IDENTIFIER: &str = "Wrong fee token identifier";

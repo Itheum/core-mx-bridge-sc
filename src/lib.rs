@@ -3,7 +3,7 @@
 use crate::errors::{
     ERR_ADDRESS_NOT_WHITELISTED, ERR_CONTRACT_NOT_READY, ERR_NOT_ENOUGH_LIQUIDITY,
     ERR_NOT_PRIVILEGED, ERR_NOT_WHOLE_NUMBER, ERR_PAYMENT_AMOUNT_NOT_IN_ACCEPTED_RANGE,
-    ERR_TOKEN_NOT_WHITELISTED, ERR_WRONG_VALUES,
+    ERR_TOKEN_NOT_WHITELISTED, ERR_WRONG_FEE_TOKEN_IDENTIFIER, ERR_WRONG_VALUES,
 };
 
 use crate::proxies::wegld_proxy;
@@ -82,7 +82,7 @@ pub trait CoreMxBridgeSc:
         } else {
             let [deposit, fee] = self.call_value().multi_esdt();
 
-            require!(self.fee_value().get() == fee.amount, ERR_WRONG_VALUES);
+            require!(fee_value == fee.amount, ERR_WRONG_VALUES);
 
             let wegld_token_identifier = self
                 .tx()
@@ -94,7 +94,7 @@ pub trait CoreMxBridgeSc:
 
             require!(
                 fee.token_identifier == wegld_token_identifier,
-                ERR_TOKEN_NOT_WHITELISTED
+                ERR_WRONG_FEE_TOKEN_IDENTIFIER
             );
 
             require!(
@@ -121,11 +121,12 @@ pub trait CoreMxBridgeSc:
                 .to(&self.wegld_contract_address().get())
                 .typed(wegld_proxy::EgldEsdtSwapProxy)
                 .unwrap_egld()
+                .with_esdt_transfer(fee)
                 .returns(ReturnsBackTransfers)
                 .sync_call();
 
             self.send().direct_egld(
-                &self.fee_colector().get(),
+                &self.fee_collector().get(),
                 &back_transfers.total_egld_amount,
             );
 

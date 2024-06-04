@@ -90,7 +90,7 @@ pub trait AdminModule:
     fn set_fee_collector(&self, fee_collector: ManagedAddress) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);
         self.set_fee_collector_event(&fee_collector);
-        self.fee_colector().set(fee_collector);
+        self.fee_collector().set(fee_collector);
     }
 
     #[endpoint(setFeeValue)]

@@ -20,8 +20,8 @@ pub trait StorageModule {
     fn maximum_deposit(&self, token_identifier: &TokenIdentifier) -> SingleValueMapper<BigUint>;
 
     #[view(getFeeCollector)]
-    #[storage_mapper("fee_colector")]
-    fn fee_colector(&self) -> SingleValueMapper<ManagedAddress>;
+    #[storage_mapper("fee_collector")]
+    fn fee_collector(&self) -> SingleValueMapper<ManagedAddress>;
 
     #[view(getFeeValue)]
     #[storage_mapper("fee_value")]
