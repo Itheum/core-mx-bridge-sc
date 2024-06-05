@@ -64,4 +64,13 @@ pub trait EventsModule {
         #[indexed] minimum: &BigUint,
         #[indexed] maximum: &BigUint,
     );
+
+    #[event("setFeeCollectorEvent")]
+    fn set_fee_collector_event(&self, #[indexed] fee_collector: &ManagedAddress);
+
+    #[event("setFeeValueEvent")]
+    fn set_fee_value_event(&self, #[indexed] fee_value: &BigUint);
+
+    #[event("setWegldContractAddressEvent")]
+    fn set_wegld_contract_address_event(&self, #[indexed] wegld_contract_address: &ManagedAddress);
 }

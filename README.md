@@ -22,15 +22,15 @@ See `devnet.snippets.sh` for list of available endpoints for user testing.
 
 ### Setting up dev environment (project development bootstrap) + how to build (and upgrade)
 
-- Uses `multiversx-sc-* 0.49.0` (In v2.0.0, we used0.49.0) SDK libs (see Cargo.toml)
+- Uses `multiversx-sc-* 0.50.3` (In v2.0.0, we used0.50.3) SDK libs (see Cargo.toml)
 - Building requires minimum **mxpy 9.5.1** (In v2.0.0, we used mxpy 9.5.1). Check version using `mxpy --version`
-- To build the project, requires minimum Rust version `1.78.0-nightly` (In v2.0.0, we used 1.78.0-nightly). Check your Rust version by running `rustc --version`. To update your Rust, run `rustup update`. To set to nightly run `rustup default nightly`. Note that `mxpy deps install rust --overwrite` also brings in it's own compatible rust version so running `rustup default nightly` might have a higher rust version than what is used via `mxpy deps install rust --overwrite`.
-- Uses `multiversx-sc-*0.49.0` (In v1.0.0, we used0.49.0) SDK libs (see Cargo.toml)
+- To build the project, requires minimum Rust version `1.78.0` (In v2.0.0, we used 1.78.0). Check your Rust version by running `rustc --version`. To update your Rust, run `rustup update`. To set to nightly run `rustup default stable`. Note that `mxpy deps install rust --overwrite` also brings in it's own compatible rust version so running `rustup default stable` might have a higher rust version than what is used via `mxpy deps install rust --overwrite`.
+- Uses `multiversx-sc-*0.50.3` (In v1.0.0, we used0.50.3) SDK libs (see Cargo.toml)
 - Building requires minimum **mxpy 9.5.1** (In v1.0.0, we used mxpy 9.5.1). Check version using `mxpy --version`
-- To build the project, requires minimum Rust version `1.78.0-nightly` (In v1.0.0, we used 1.78.0-nightly). Check your Rust version by running `rustc --version`. To update your Rust, run `rustup update`. To set to nightly run `rustup default nightly`. Note that `mxpy deps install rust --overwrite` also brings in it's own compatible rust version so running `rustup default nightly` might have a higher rust version than what is used via `mxpy deps install rust --overwrite`.
+- To build the project, requires minimum Rust version `1.78.0` (In v1.0.0, we used 1.78.0-nightly). Check your Rust version by running `rustc --version`. To update your Rust, run `rustup update`. To set to nightly run `rustup default stable`. Note that `mxpy deps install rust --overwrite` also brings in it's own compatible rust version so running `rustup default nightly` might have a higher rust version than what is used via `mxpy deps install rust --overwrite`.
 
 ```
-rustup default nightly
+rustup default stable
 mxpy deps install rust --overwrite
 cargo clean
 cargo build
@@ -58,7 +58,7 @@ Another way of running the tests is by using the rust-analyzer extension in Visu
 Note: In order to run the tests, one has to use the rust nightly version. One can switch to the nightly version by using:
 
 ```shell
-    rustup default nightly
+    rustup default stable
 ```
 
 ### How to deploy

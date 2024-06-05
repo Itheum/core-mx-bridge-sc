@@ -346,8 +346,9 @@ name = "core-mx-bridge-sc"
 version = "0.1.0"
 dependencies = [
  "multiversx-sc",
+ "multiversx-sc-modules",
  "multiversx-sc-scenario",
- "num-bigint",
+ "multiversx-wegld-swap-sc",
 ]
 
 [[package]]
@@ -1100,6 +1101,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "multiversx-sc-modules"
+version = "0.50.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f9a8c10ddadc7adfc04edbdd1ea80a9ae9a7e11202fc4cfb2e08c8e27f17aa5"
+dependencies = [
+ "multiversx-sc",
+]
+
+[[package]]
 name = "multiversx-sc-scenario"
 version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1152,6 +1162,16 @@ dependencies = [
  "sha3",
  "tokio",
  "zeroize",
+]
+
+[[package]]
+name = "multiversx-wegld-swap-sc"
+version = "0.50.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72d3aa3ee209e07f3562407530a636080437f348811961ab3127cf646a1e32ce"
+dependencies = [
+ "multiversx-sc",
+ "multiversx-sc-modules",
 ]
 
 [[package]]

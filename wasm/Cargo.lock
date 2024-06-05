@@ -25,6 +25,7 @@ name = "core-mx-bridge-sc"
 version = "0.1.0"
 dependencies = [
  "multiversx-sc",
+ "multiversx-sc-modules",
 ]
 
 [[package]]
@@ -101,6 +102,15 @@ dependencies = [
  "quote",
  "radix_trie",
  "syn",
+]
+
+[[package]]
+name = "multiversx-sc-modules"
+version = "0.50.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f9a8c10ddadc7adfc04edbdd1ea80a9ae9a7e11202fc4cfb2e08c8e27f17aa5"
+dependencies = [
+ "multiversx-sc",
 ]
 
 [[package]]

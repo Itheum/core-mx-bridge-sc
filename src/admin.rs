@@ -2,7 +2,8 @@ use crate::{
     config::State,
     errors::{
         ERR_ADDRESS_ALREADY_WHITELISTED, ERR_ADDRESS_NOT_WHITELISTED, ERR_ALREADY_ACTIVE,
-        ERR_ALREADY_INACTIVE, ERR_NOT_PRIVILEGED, ERR_TOKEN_NOT_WHITELISTED, ERR_WRONG_VALUES,
+        ERR_ALREADY_INACTIVE, ERR_NOT_PRIVILEGED, ERR_TOKEN_ALREADY_IN_WHITELIST,
+        ERR_TOKEN_NOT_WHITELISTED, ERR_WRONG_VALUES,
     },
     events, only_privileged, storage,
 };
@@ -86,6 +87,26 @@ pub trait AdminModule:
         self.maximum_deposit(&token_identifier).set(maximum);
     }
 
+    #[endpoint(setFeeCollector)]
+    fn set_fee_collector(&self, fee_collector: ManagedAddress) {
+        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        self.set_fee_collector_event(&fee_collector);
+        self.fee_collector().set(fee_collector);
+    }
+
+    #[endpoint(setFeeValue)]
+    fn set_fee_value(&self, fee_value: BigUint) {
+        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        self.fee_value().set(fee_value);
+    }
+
+    #[endpoint(setWegldContractAddress)]
+    fn set_wegld_contract_address(&self, wegld_contract_address: ManagedAddress) {
+        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        self.set_wegld_contract_address_event(&wegld_contract_address);
+        self.wegld_contract_address().set(wegld_contract_address);
+    }
+
     #[endpoint(addTokensToWhitelist)]
     fn add_tokens_to_whitelist(
         &self,
@@ -96,7 +117,10 @@ pub trait AdminModule:
         for token in tokens.into_iter() {
             let (token_identifier, token_decimals) = token.into_tuple();
             self.token_decimals(&token_identifier).set(token_decimals);
-            self.tokens_whitelist().insert(token_identifier);
+            require!(
+                self.tokens_whitelist().insert(token_identifier),
+                ERR_TOKEN_ALREADY_IN_WHITELIST
+            );
         }
     }
 
@@ -106,7 +130,10 @@ pub trait AdminModule:
         self.remove_tokens_from_whitelist_event(&tokens.to_vec());
         for token in tokens.into_iter() {
             self.token_decimals(&token).clear();
-            self.tokens_whitelist().swap_remove(&token);
+            require!(
+                self.tokens_whitelist().swap_remove(&token),
+                ERR_TOKEN_NOT_WHITELISTED
+            );
         }
     }
 
@@ -164,11 +191,6 @@ pub trait AdminModule:
     #[endpoint(removeFromLiquidity)]
     fn remove_from_liquidity(&self, token_identifier: TokenIdentifier, amount: BigUint) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);
-
-        require!(
-            self.tokens_whitelist().contains(&token_identifier),
-            ERR_TOKEN_NOT_WHITELISTED
-        );
 
         let caller = self.blockchain().get_caller();
 
