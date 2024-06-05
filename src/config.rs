@@ -83,12 +83,14 @@ pub trait ConfigModule: storage::StorageModule + events::EventsModule {
             is_ready = false;
         }
 
-        if self.fee_collector().is_empty() {
-            is_ready = false;
-        }
+        if self.fee_value().get() != BigUint::zero() {
+            if self.fee_collector().is_empty() {
+                is_ready = false;
+            }
 
-        if self.wegld_contract_address().is_empty() {
-            is_ready = false;
+            if self.wegld_contract_address().is_empty() {
+                is_ready = false;
+            }
         }
 
         if self.relayer().is_empty() {

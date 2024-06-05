@@ -79,6 +79,8 @@ fn contract_is_ready_test() {
 
     assert_eq!(check, false);
 
+    bridge_sc.fee_value().set(BigUint::from(10u64));
+
     bridge_sc
         .tokens_whitelist()
         .insert(TokenIdentifier::from(ITHEUM_TOKEN_IDENTIFIER));
