@@ -39,7 +39,7 @@ deploy(){
 # in below code example we added --metadata-payable to add PAYABLE to the prop of the SC and removed --metadata-not-readable to make it READABLE
 upgrade(){
     mxpy --verbose contract upgrade ${ADDRESS} \
-    --bytecode output/core-mx-life-bonding-sc.wasm \
+    --bytecode output/core-mx-bridge-sc.wasm \
     --metadata-payable-by-sc \
     --metadata-payable \
     --pem ${WALLET} \
