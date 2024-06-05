@@ -68,6 +68,57 @@ setAdministrator(){
     --send || return
 }
 
+setFeeCollector(){
+    # $1 = address
+
+    address="0x$(mxpy wallet bech32 --decode ${1})"
+
+    mxpy --verbose contract call ${ADDRESS} \
+    --recall-nonce \
+    --pem=${WALLET} \
+    --gas-limit=6000000 \
+    --function "setFeeCollector" \
+    --arguments $address \
+    --proxy ${PROXY} \
+    --chain ${CHAIN_ID} \
+    --send || return
+
+}
+
+setFeeValue(){
+    # $1 = value
+
+  
+
+    mxpy --verbose contract call ${ADDRESS} \
+    --recall-nonce \
+    --pem=${WALLET} \
+    --gas-limit=6000000 \
+    --function "setFeeValue" \
+    --arguments $1 \
+    --proxy ${PROXY} \
+    --chain ${CHAIN_ID} \
+    --send || return
+
+}
+
+setWegldContractAddress(){
+    # $1 = address
+
+    address="0x$(mxpy wallet bech32 --decode ${1})"
+
+    mxpy --verbose contract call ${ADDRESS} \
+    --recall-nonce \
+    --pem=${WALLET} \
+    --gas-limit=6000000 \
+    --function "setWegldContractAddress" \
+    --arguments $address \
+    --proxy ${PROXY} \
+    --chain ${CHAIN_ID} \
+    --send || return
+
+}
+
 
 
 setContractStateActive(){
