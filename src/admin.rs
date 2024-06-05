@@ -2,7 +2,8 @@ use crate::{
     config::State,
     errors::{
         ERR_ADDRESS_ALREADY_WHITELISTED, ERR_ADDRESS_NOT_WHITELISTED, ERR_ALREADY_ACTIVE,
-        ERR_ALREADY_INACTIVE, ERR_NOT_PRIVILEGED, ERR_TOKEN_NOT_WHITELISTED, ERR_WRONG_VALUES,
+        ERR_ALREADY_INACTIVE, ERR_NOT_PRIVILEGED, ERR_TOKEN_ALREADY_IN_WHITELIST,
+        ERR_TOKEN_NOT_WHITELISTED, ERR_WRONG_VALUES,
     },
     events, only_privileged, storage,
 };
@@ -116,7 +117,10 @@ pub trait AdminModule:
         for token in tokens.into_iter() {
             let (token_identifier, token_decimals) = token.into_tuple();
             self.token_decimals(&token_identifier).set(token_decimals);
-            self.tokens_whitelist().insert(token_identifier);
+            require!(
+                self.tokens_whitelist().insert(token_identifier),
+                ERR_TOKEN_ALREADY_IN_WHITELIST
+            );
         }
     }
 
@@ -126,7 +130,10 @@ pub trait AdminModule:
         self.remove_tokens_from_whitelist_event(&tokens.to_vec());
         for token in tokens.into_iter() {
             self.token_decimals(&token).clear();
-            self.tokens_whitelist().swap_remove(&token);
+            require!(
+                self.tokens_whitelist().swap_remove(&token),
+                ERR_TOKEN_NOT_WHITELISTED
+            );
         }
     }
 
@@ -184,11 +191,6 @@ pub trait AdminModule:
     #[endpoint(removeFromLiquidity)]
     fn remove_from_liquidity(&self, token_identifier: TokenIdentifier, amount: BigUint) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);
-
-        require!(
-            self.tokens_whitelist().contains(&token_identifier),
-            ERR_TOKEN_NOT_WHITELISTED
-        );
 
         let caller = self.blockchain().get_caller();
 

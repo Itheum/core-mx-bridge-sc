@@ -154,11 +154,6 @@ pub trait CoreMxBridgeSc:
         let caller = self.blockchain().get_caller();
         require!(self.relayer().get() == caller, ERR_NOT_PRIVILEGED);
 
-        require!(
-            self.liquidity(&token_identifier).get() >= amount,
-            ERR_NOT_ENOUGH_LIQUIDITY
-        );
-
         self.send_from_liquidity_event(
             &self.relayer().get(),
             &token_identifier,
@@ -166,10 +161,12 @@ pub trait CoreMxBridgeSc:
             &receiver,
         );
 
+        self.liquidity(&token_identifier).update(|value| {
+            require!(*value >= amount, ERR_NOT_ENOUGH_LIQUIDITY);
+            *value -= &amount;
+        });
+
         self.send()
             .direct_esdt(&receiver, &token_identifier, 0u64, &amount);
-
-        self.liquidity(&token_identifier)
-            .update(|value| *value -= amount);
     }
 }
