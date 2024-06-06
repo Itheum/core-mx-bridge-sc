@@ -6,9 +6,9 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                           30
+// Endpoints:                           33
 // Async Callback (empty):               1
-// Total number of exported functions:  33
+// Total number of exported functions:  36
 
 #![no_std]
 
@@ -33,10 +33,13 @@ multiversx_sc_wasm_adapter::endpoints! {
         getAdministrator => administrator
         getTokensWhitelist => tokens_whitelist
         getWhitelistState => whitelist_state
-        getContractState => contract_state
+        getPublicState => public_state
+        getRelayerState => relayer_state
         getRelayer => relayer
-        setContractStateActive => set_contract_state_active
-        setContractStateInactive => set_contract_state_inactive
+        setPublicStateActive => set_public_state_active
+        setPublicStateInactive => set_public_state_inactive
+        setRelayerStateActive => set_relayer_state_active
+        setRelayerStateInactive => set_relayer_state_inactive
         setWhitelistStateActive => set_whitelist_state_active
         setWhitelistStateInactive => set_whitelist_state_inactive
         setDepositLimits => set_deposit_limits

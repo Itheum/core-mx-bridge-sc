@@ -22,7 +22,7 @@ fn relayer_test() {
 
     state
         .default_deploy_and_set()
-        .set_contract_state_active(OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR, None);
+        .set_relayer_state_active(OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR, None);
 
     state.send_from_liquidity(
         FIRST_USER_ADDRESS_EXPR,

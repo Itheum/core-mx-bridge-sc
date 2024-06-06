@@ -228,7 +228,7 @@ impl ContractState {
     pub fn check_contract_state(&mut self, contract_state: State) -> &mut Self {
         self.world.sc_query(
             ScQueryStep::new()
-                .call(self.contract.contract_state())
+                .call(self.contract.public_state())
                 .expect_value(SingleValue::from(contract_state)),
         );
         self
@@ -291,7 +291,37 @@ impl ContractState {
         self.world.sc_call(
             ScCallStep::new()
                 .from(caller)
-                .call(self.contract.set_contract_state_active())
+                .call(self.contract.set_public_state_active())
+                .expect(tx_expect),
+        );
+        self
+    }
+
+    pub fn set_relayer_state_active(
+        &mut self,
+        caller: &str,
+        expect: Option<TxExpect>,
+    ) -> &mut Self {
+        let tx_expect = expect.unwrap_or(TxExpect::ok());
+        self.world.sc_call(
+            ScCallStep::new()
+                .from(caller)
+                .call(self.contract.set_relayer_state_active())
+                .expect(tx_expect),
+        );
+        self
+    }
+
+    pub fn set_relayer_state_inactive(
+        &mut self,
+        caller: &str,
+        expect: Option<TxExpect>,
+    ) -> &mut Self {
+        let tx_expect = expect.unwrap_or(TxExpect::ok());
+        self.world.sc_call(
+            ScCallStep::new()
+                .from(caller)
+                .call(self.contract.set_relayer_state_inactive())
                 .expect(tx_expect),
         );
         self
@@ -306,7 +336,7 @@ impl ContractState {
         self.world.sc_call(
             ScCallStep::new()
                 .from(caller)
-                .call(self.contract.set_contract_state_inactive())
+                .call(self.contract.set_public_state_inactive())
                 .expect(tx_expect),
         );
         self
