@@ -31,7 +31,8 @@ pub trait CoreMxBridgeSc:
 
     #[upgrade]
     fn upgrade(&self) {
-        self.set_contract_state_inactive();
+        self.set_public_state_inactive();
+        self.set_relayer_state_inactive();
     }
 
     #[payable("*")]
@@ -43,6 +44,10 @@ pub trait CoreMxBridgeSc:
     ) {
         let caller = self.blockchain().get_caller();
         require_contract_ready!(self, ERR_CONTRACT_NOT_READY);
+        require!(
+            self.is_state_active(self.public_state().get()),
+            ERR_CONTRACT_NOT_READY
+        );
         check_whitelist!(self, &caller, ERR_ADDRESS_NOT_WHITELISTED);
 
         let fee_value = self.fee_value().get();
@@ -151,6 +156,10 @@ pub trait CoreMxBridgeSc:
         receiver: ManagedAddress,
     ) {
         require_contract_ready!(self, ERR_CONTRACT_NOT_READY);
+        require!(
+            self.is_state_active(self.relayer_state().get()),
+            ERR_CONTRACT_NOT_READY
+        );
         let caller = self.blockchain().get_caller();
         require!(self.relayer().get() == caller, ERR_NOT_PRIVILEGED);
 

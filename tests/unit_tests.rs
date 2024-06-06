@@ -53,7 +53,7 @@ fn contract_is_ready_test() {
 
     assert_eq!(check, false);
 
-    bridge_sc.contract_state().set(State::Active);
+    bridge_sc.public_state().set(State::Active);
 
     check = bridge_sc.contract_is_ready();
 

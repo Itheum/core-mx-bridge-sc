@@ -15,8 +15,8 @@ multiversx_sc::derive_imports!();
 pub trait AdminModule:
     crate::config::ConfigModule + storage::StorageModule + events::EventsModule
 {
-    #[endpoint(setContractStateActive)]
-    fn set_contract_state_active(&self) {
+    #[endpoint(setPublicStateActive)]
+    fn set_public_state_active(&self) {
         let caller = self.blockchain().get_caller();
 
         require!(
@@ -24,15 +24,15 @@ pub trait AdminModule:
             ERR_NOT_PRIVILEGED
         );
         require!(
-            self.contract_state().get() == State::Inactive,
+            self.public_state().get() == State::Inactive,
             ERR_ALREADY_ACTIVE
         );
-        self.contract_state().set(State::Active);
+        self.public_state().set(State::Active);
         self.set_contract_state_event(&State::Active);
     }
 
-    #[endpoint(setContractStateInactive)]
-    fn set_contract_state_inactive(&self) {
+    #[endpoint(setPublicStateInactive)]
+    fn set_public_state_inactive(&self) {
         let caller = self.blockchain().get_caller();
 
         require!(
@@ -40,11 +40,33 @@ pub trait AdminModule:
             ERR_NOT_PRIVILEGED
         );
         require!(
-            self.contract_state().get() == State::Active,
+            self.public_state().get() == State::Active,
             ERR_ALREADY_INACTIVE
         );
-        self.contract_state().set(State::Inactive);
+        self.public_state().set(State::Inactive);
         self.set_contract_state_event(&State::Inactive);
+    }
+
+    #[endpoint(setRelayerStateActive)]
+    fn set_relayer_state_active(&self) {
+        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        require!(
+            self.relayer_state().get() == State::Inactive,
+            ERR_ALREADY_ACTIVE
+        );
+        self.relayer_state().set(State::Active);
+        self.set_relayer_state_event(&State::Active);
+    }
+
+    #[endpoint(setRelayerStateInactive)]
+    fn set_relayer_state_inactive(&self) {
+        only_privileged!(self, ERR_NOT_PRIVILEGED);
+        require!(
+            self.relayer_state().get() == State::Active,
+            ERR_ALREADY_INACTIVE
+        );
+        self.relayer_state().set(State::Inactive);
+        self.set_relayer_state_event(&State::Inactive);
     }
 
     #[endpoint(setWhitelistStateActive)]

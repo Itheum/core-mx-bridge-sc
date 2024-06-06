@@ -75,10 +75,6 @@ pub trait ConfigModule: storage::StorageModule + events::EventsModule {
     fn contract_is_ready(&self) -> bool {
         let mut is_ready = true;
 
-        if !self.is_state_active(self.contract_state().get()) {
-            is_ready = false;
-        }
-
         if self.administrator().is_empty() {
             is_ready = false;
         }
@@ -117,9 +113,13 @@ pub trait ConfigModule: storage::StorageModule + events::EventsModule {
     #[storage_mapper("whitelist_state")]
     fn whitelist_state(&self) -> SingleValueMapper<State>;
 
-    #[view(getContractState)]
-    #[storage_mapper("contract_state")]
-    fn contract_state(&self) -> SingleValueMapper<State>;
+    #[view(getPublicState)]
+    #[storage_mapper("public_state")]
+    fn public_state(&self) -> SingleValueMapper<State>;
+
+    #[view(getRelayerState)]
+    #[storage_mapper("relayer_state")]
+    fn relayer_state(&self) -> SingleValueMapper<State>;
 
     #[view(getRelayer)]
     #[storage_mapper("relayer")]

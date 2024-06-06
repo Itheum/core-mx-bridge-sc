@@ -73,4 +73,7 @@ pub trait EventsModule {
 
     #[event("setWegldContractAddressEvent")]
     fn set_wegld_contract_address_event(&self, #[indexed] wegld_contract_address: &ManagedAddress);
+
+    #[event("setRelayerStateEvent")]
+    fn set_relayer_state_event(&self, #[indexed] state: &State);
 }

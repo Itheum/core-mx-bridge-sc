@@ -121,23 +121,45 @@ setWegldContractAddress(){
 
 
 
-setContractStateActive(){
+setPublicStateActive(){
     mxpy --verbose contract call ${ADDRESS} \
     --recall-nonce \
     --pem=${WALLET} \
     --gas-limit=6000000 \
-    --function "setContractStateActive" \
+    --function "setPublicStateActive" \
     --proxy ${PROXY} \
     --chain ${CHAIN_ID} \
     --send || return
 }
 
-setContractStateInactive(){
+setPublicStateInactive(){
     mxpy --verbose contract call ${ADDRESS} \
     --recall-nonce \
     --pem=${WALLET} \
     --gas-limit=6000000 \
-    --function "setContractStateInactive" \
+    --function "setPublicStateInactive" \
+    --proxy ${PROXY} \
+    --chain ${CHAIN_ID} \
+    --send || return
+}
+
+setRelayerStateActive(){
+    mxpy --verbose contract call ${ADDRESS} \
+    --recall-nonce \
+    --pem=${WALLET} \
+    --gas-limit=6000000 \
+    --function "setRelayerStateActive" \
+    --proxy ${PROXY} \
+    --chain ${CHAIN_ID} \
+    --send || return
+}
+
+setRelayerStateInactive(){
+    mxpy --verbose contract call ${ADDRESS} \
+    --recall-nonce \
+    --pem=${WALLET} \
+    --gas-limit=6000000 \
+    --function "setRelayerStateInactive" \
     --proxy ${PROXY} \
     --chain ${CHAIN_ID} \
     --send || return
