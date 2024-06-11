@@ -6,12 +6,8 @@ use crate::bridge_sc::bridge_sc::{
     ContractState, ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR, ANOTHER_TOKEN_IDENTIFIER_EXPR,
     BRIDGE_CONTRACT_ADDRESS_EXPR, FIRST_USER_ADDRESS_EXPR, ITHEUM_TOKEN_IDENTIFIER,
     ITHEUM_TOKEN_IDENTIFIER_EXPR, OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR,
-    OWNER_WEGLD_SWAP_CONTRACT_ADDRESS_EXPR, RELAYER_BRIDGE_CONTRACT_ADDRESS_EXPR,
-    THIRD_USER_ADDRESS_EXPR, WEGLD_TOKEN_IDENTIFIER_EXPR,
+    RELAYER_BRIDGE_CONTRACT_ADDRESS_EXPR, THIRD_USER_ADDRESS_EXPR, WEGLD_TOKEN_IDENTIFIER_EXPR,
 };
-
-use multiversx_sc_modules::pause::ProxyTrait;
-use multiversx_wegld_swap_sc::ProxyTrait as _;
 
 #[test]
 fn send_to_bridge_test() {
@@ -141,7 +137,6 @@ fn send_to_bridge_require_fee_test() {
 
     state
         .default_deploy_and_set()
-        .deploy_wegld_swap()
         .set_contract_state_active(OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR, None)
         .set_fee_value(OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR, 1_000u64, None);
 
@@ -158,25 +153,10 @@ fn send_to_bridge_require_fee_test() {
             THIRD_USER_ADDRESS_EXPR,
             Account::new()
                 .nonce(1)
-                .balance("1_000")
+                .esdt_balance(WEGLD_TOKEN_IDENTIFIER_EXPR, "1_000")
                 .esdt_balance(ITHEUM_TOKEN_IDENTIFIER_EXPR, "100_000_000_000_000_000_000") // 100 tokens
                 .esdt_balance(ANOTHER_TOKEN_IDENTIFIER_EXPR, "1_000"),
         ),
-    );
-
-    state.world.sc_call(
-        ScCallStep::new()
-            .from(OWNER_WEGLD_SWAP_CONTRACT_ADDRESS_EXPR)
-            .call(state.wegld_swap_contract.unpause_endpoint())
-            .expect(TxExpect::ok()),
-    );
-
-    state.world.sc_call(
-        ScCallStep::new()
-            .from(THIRD_USER_ADDRESS_EXPR)
-            .egld_value("1_000")
-            .call(state.wegld_swap_contract.wrap_egld())
-            .expect(TxExpect::ok()),
     );
 
     state.send_to_liquidity(
@@ -244,7 +224,7 @@ fn send_to_bridge_require_fee_test() {
             )
             .put_account(
                 RELAYER_BRIDGE_CONTRACT_ADDRESS_EXPR,
-                CheckAccount::new().balance("1_000"), // fee
+                CheckAccount::new().esdt_balance(WEGLD_TOKEN_IDENTIFIER_EXPR, "1_000"), // fee
             ),
     );
 }

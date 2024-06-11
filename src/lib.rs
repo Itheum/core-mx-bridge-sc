@@ -6,8 +6,6 @@ use crate::errors::{
     ERR_TOKEN_NOT_WHITELISTED, ERR_WRONG_FEE_TOKEN_IDENTIFIER, ERR_WRONG_VALUES,
 };
 
-use crate::proxies::wegld_proxy;
-
 multiversx_sc::imports!();
 
 pub mod admin;
@@ -15,7 +13,6 @@ pub mod config;
 pub mod errors;
 pub mod events;
 pub mod macros;
-pub mod proxies;
 pub mod storage;
 pub mod utils;
 #[multiversx_sc::contract]
@@ -56,7 +53,7 @@ pub trait CoreMxBridgeSc:
             let deposit = self.call_value().single_esdt();
 
             require!(
-                self.tokens_whitelist().contains(&deposit.token_identifier),
+                self.token_whitelist().get() == deposit.token_identifier,
                 ERR_TOKEN_NOT_WHITELISTED
             );
 
@@ -89,21 +86,13 @@ pub trait CoreMxBridgeSc:
 
             require!(fee_value == fee.amount, ERR_WRONG_VALUES);
 
-            let wegld_token_identifier = self
-                .tx()
-                .to(&self.wegld_contract_address().get())
-                .typed(wegld_proxy::EgldEsdtSwapProxy)
-                .wrapped_egld_token_id()
-                .returns(ReturnsResult)
-                .sync_call();
-
             require!(
-                fee.token_identifier == wegld_token_identifier,
+                fee.token_identifier == self.wegld_token_identifier().get(),
                 ERR_WRONG_FEE_TOKEN_IDENTIFIER
             );
 
             require!(
-                self.tokens_whitelist().contains(&deposit.token_identifier),
+                self.token_whitelist().get() == deposit.token_identifier,
                 ERR_TOKEN_NOT_WHITELISTED
             );
 
@@ -121,18 +110,11 @@ pub trait CoreMxBridgeSc:
                 ERR_PAYMENT_AMOUNT_NOT_IN_ACCEPTED_RANGE
             );
 
-            let back_transfers = self
-                .tx()
-                .to(&self.wegld_contract_address().get())
-                .typed(wegld_proxy::EgldEsdtSwapProxy)
-                .unwrap_egld()
-                .with_esdt_transfer(fee)
-                .returns(ReturnsBackTransfers)
-                .sync_call();
-
-            self.send().direct_egld(
+            self.send().direct_esdt(
                 &self.fee_collector().get(),
-                &back_transfers.total_egld_amount,
+                &fee.token_identifier,
+                0u64,
+                &fee.amount,
             );
 
             self.send_to_liquidity_event(

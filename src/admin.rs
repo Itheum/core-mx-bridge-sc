@@ -100,7 +100,7 @@ pub trait AdminModule:
     ) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);
         require!(
-            self.tokens_whitelist().contains(&token_identifier),
+            self.token_whitelist().get() == token_identifier,
             ERR_TOKEN_NOT_WHITELISTED
         );
         require!(minimum <= maximum, ERR_WRONG_VALUES);
@@ -119,44 +119,46 @@ pub trait AdminModule:
     #[endpoint(setFeeValue)]
     fn set_fee_value(&self, fee_value: BigUint) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);
+        self.set_fee_value_event(&fee_value);
         self.fee_value().set(fee_value);
     }
 
-    #[endpoint(setWegldContractAddress)]
-    fn set_wegld_contract_address(&self, wegld_contract_address: ManagedAddress) {
+    #[endpoint(setWegldTokenIdentifier)]
+    fn set_wegld_contract_address(&self, wegld_token_identifier: TokenIdentifier) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);
-        self.set_wegld_contract_address_event(&wegld_contract_address);
-        self.wegld_contract_address().set(wegld_contract_address);
+        self.set_wegld_token_identifier(&wegld_token_identifier);
+        self.wegld_token_identifier().set(wegld_token_identifier);
     }
 
-    #[endpoint(addTokensToWhitelist)]
-    fn add_tokens_to_whitelist(
-        &self,
-        tokens: MultiValueEncoded<MultiValue2<TokenIdentifier, u32>>,
-    ) {
+    #[endpoint(addTokenToWhitelist)]
+    fn add_tokens_to_whitelist(&self, token: TokenIdentifier, decimals: u32) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);
 
-        for token in tokens.into_iter() {
-            let (token_identifier, token_decimals) = token.into_tuple();
-            self.token_decimals(&token_identifier).set(token_decimals);
-            require!(
-                self.tokens_whitelist().insert(token_identifier),
-                ERR_TOKEN_ALREADY_IN_WHITELIST
-            );
+        self.add_token_to_whitelist_event(&token, &decimals);
+        if !self.token_whitelist().is_empty() {
+            self.token_decimals(&token).set(decimals);
+            self.token_whitelist().update(|whitelist_token| {
+                require!(*whitelist_token != token, ERR_TOKEN_ALREADY_IN_WHITELIST);
+                *whitelist_token = token
+            });
+        } else {
+            self.token_decimals(&token).set(decimals);
+            self.token_whitelist().set(token);
         }
     }
 
-    #[endpoint(removeTokensFromWhitelist)]
-    fn remove_tokens_from_whitelist(&self, tokens: MultiValueEncoded<TokenIdentifier>) {
+    #[endpoint(removeTokenFromWhitelist)]
+    fn remove_token_from_whitelist(&self, token: TokenIdentifier) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);
-        self.remove_tokens_from_whitelist_event(&tokens.to_vec());
-        for token in tokens.into_iter() {
-            self.token_decimals(&token).clear();
-            require!(
-                self.tokens_whitelist().swap_remove(&token),
-                ERR_TOKEN_NOT_WHITELISTED
-            );
-        }
+
+        self.remove_token_from_whitelist_event(&token);
+        require!(
+            self.token_whitelist().get() == token,
+            ERR_TOKEN_NOT_WHITELISTED
+        );
+
+        self.token_decimals(&token).clear();
+        self.token_whitelist().clear();
     }
 
     #[endpoint(addToWhitelist)]
@@ -164,10 +166,11 @@ pub trait AdminModule:
         only_privileged!(self, ERR_NOT_PRIVILEGED);
         for address in addresses.into_iter() {
             require!(
-                self.whitelist().contains(&address) == false,
+                !self.whitelist().contains(&address),
                 ERR_ADDRESS_ALREADY_WHITELISTED
             );
             self.whitelist().add(&address);
+            self.add_to_whitelist_event(&address);
         }
     }
 
@@ -180,6 +183,7 @@ pub trait AdminModule:
                 ERR_ADDRESS_NOT_WHITELISTED
             );
             self.whitelist().remove(&address);
+            self.remove_from_whitelist_event(&address);
         }
     }
 
@@ -198,7 +202,7 @@ pub trait AdminModule:
         let payment = self.call_value().single_esdt();
 
         require!(
-            self.tokens_whitelist().contains(&payment.token_identifier),
+            self.token_whitelist().get() == payment.token_identifier,
             ERR_TOKEN_NOT_WHITELISTED
         );
 

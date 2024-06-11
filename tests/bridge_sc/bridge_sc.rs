@@ -11,14 +11,7 @@ use multiversx_sc_scenario::scenario_model::BigUintValue;
 
 pub const BRIDGE_CONTRACT_PATH: &str = "mxsc:output/core-mx-bridge-sc-mxsc.json";
 
-pub const WEGLD_SWAP_CONTRACT_PATH: &str =
-    "mxsc:tests-contracts/multiversx-wegld-swap-sc.mxsc.json";
-
 pub const BRIDGE_CONTRACT_ADDRESS_EXPR: &str = "sc:bridge-sc";
-
-pub const WEGLD_SWAP_CONTRACT_ADDRESS_EXPR: &str = "sc:wegld-swap-sc";
-
-pub const OWNER_WEGLD_SWAP_CONTRACT_ADDRESS_EXPR: &str = "address:owner-wegld-swap-sc";
 
 pub const OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR: &str = "address:owner-bridge-sc";
 
@@ -41,7 +34,6 @@ pub const SECOND_USER_ADDRESS_EXPR: &str = "address:second_user";
 pub const THIRD_USER_ADDRESS_EXPR: &str = "address:third_user";
 
 type Contract = ContractInfo<core_mx_bridge_sc::Proxy<StaticApi>>;
-type WegldSwapContract = ContractInfo<multiversx_wegld_swap_sc::Proxy<StaticApi>>;
 
 pub fn world() -> ScenarioWorld {
     let mut blockchain = ScenarioWorld::new();
@@ -50,18 +42,12 @@ pub fn world() -> ScenarioWorld {
 
     blockchain.register_contract(BRIDGE_CONTRACT_PATH, core_mx_bridge_sc::ContractBuilder);
 
-    blockchain.register_contract(
-        WEGLD_SWAP_CONTRACT_PATH,
-        multiversx_wegld_swap_sc::ContractBuilder,
-    );
-
     blockchain
 }
 
 pub struct ContractState {
     pub world: ScenarioWorld,
     pub contract: Contract,
-    pub wegld_swap_contract: WegldSwapContract,
     pub contract_owner: Address,
     pub admin: Address,
     pub relayer: Address,
@@ -87,15 +73,6 @@ impl ContractState {
                     OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR,
                     1,
                     BRIDGE_CONTRACT_ADDRESS_EXPR,
-                )
-                .put_account(
-                    OWNER_WEGLD_SWAP_CONTRACT_ADDRESS_EXPR,
-                    Account::new().nonce(1).balance("1_000"),
-                )
-                .new_address(
-                    OWNER_WEGLD_SWAP_CONTRACT_ADDRESS_EXPR,
-                    1,
-                    WEGLD_SWAP_CONTRACT_ADDRESS_EXPR,
                 )
                 .put_account(
                     ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
@@ -127,7 +104,6 @@ impl ContractState {
         );
 
         let contract = Contract::new(BRIDGE_CONTRACT_ADDRESS_EXPR);
-        let wegld_swap_contract = WegldSwapContract::new(WEGLD_SWAP_CONTRACT_ADDRESS_EXPR);
 
         let contract_owner = AddressValue::from(OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR).to_address();
         let admin = AddressValue::from(ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR).to_address();
@@ -139,7 +115,6 @@ impl ContractState {
         Self {
             world,
             contract,
-            wegld_swap_contract,
             contract_owner,
             admin,
             relayer,
@@ -171,44 +146,11 @@ impl ContractState {
                 AddressValue::from(RELAYER_BRIDGE_CONTRACT_ADDRESS_EXPR).to_address(),
                 None,
             )
-            .set_wegld_contract_address(
+            .set_wegld_token_identifier(
                 OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR,
-                AddressValue::from(WEGLD_SWAP_CONTRACT_ADDRESS_EXPR).to_address(),
+                WEGLD_TOKEN_IDENTIFIER,
                 None,
             );
-
-        self
-    }
-
-    pub fn deploy_wegld_swap(&mut self) -> &mut Self {
-        let wegld_swap_contract_code = self.world.code_expression(WEGLD_SWAP_CONTRACT_PATH);
-
-        let mut acc = Account::new()
-            .esdt_roles(
-                WEGLD_TOKEN_IDENTIFIER_EXPR,
-                vec![
-                    "ESDTRoleLocalBurn".to_string(),
-                    "ESDTRoleLocalMint".to_string(),
-                ],
-            )
-            .code(wegld_swap_contract_code);
-
-        acc.storage.insert(
-            b"wrappedEgldTokenId".to_vec().into(),
-            WEGLD_TOKEN_IDENTIFIER.to_vec().into(),
-        );
-
-        acc.storage.insert(
-            b"pause_module:paused".to_vec().into(),
-            "false".to_string().into(),
-        );
-
-        acc.owner = Option::Some(AddressValue::from(OWNER_WEGLD_SWAP_CONTRACT_ADDRESS_EXPR));
-        self.world.set_state_step(
-            SetStateStep::new()
-                .new_token_identifier(WEGLD_TOKEN_IDENTIFIER_EXPR)
-                .put_account(WEGLD_SWAP_CONTRACT_ADDRESS_EXPR, acc),
-        );
 
         self
     }
@@ -452,10 +394,10 @@ impl ContractState {
         self
     }
 
-    pub fn set_wegld_contract_address(
+    pub fn set_wegld_token_identifier(
         &mut self,
         caller: &str,
-        wegld_contract_address: Address,
+        wegld_token_identifier: &[u8],
         expect: Option<TxExpect>,
     ) -> &mut Self {
         let tx_expect = expect.unwrap_or(TxExpect::ok());
@@ -465,7 +407,7 @@ impl ContractState {
                 .from(caller)
                 .call(
                     self.contract
-                        .set_wegld_contract_address(wegld_contract_address),
+                        .set_wegld_contract_address(managed_token_id!(wegld_token_identifier)),
                 )
                 .expect(tx_expect),
         );
@@ -480,12 +422,13 @@ impl ContractState {
     ) -> &mut Self {
         let tx_expect = expect.unwrap_or(TxExpect::ok());
 
-        let mut args = MultiValueEncoded::new();
-        args.push(MultiValue2((managed_token_id!(token_identifier), 18u32)));
         self.world.sc_call(
             ScCallStep::new()
                 .from(caller)
-                .call(self.contract.add_tokens_to_whitelist(args))
+                .call(
+                    self.contract
+                        .add_tokens_to_whitelist(managed_token_id!(token_identifier), 18u32),
+                )
                 .expect(tx_expect),
         );
         self
@@ -499,12 +442,13 @@ impl ContractState {
     ) -> &mut Self {
         let tx_expect = expect.unwrap_or(TxExpect::ok());
 
-        let mut args = MultiValueEncoded::new();
-        args.push(managed_token_id!(token_identifier));
         self.world.sc_call(
             ScCallStep::new()
                 .from(caller)
-                .call(self.contract.remove_tokens_from_whitelist(args))
+                .call(
+                    self.contract
+                        .remove_token_from_whitelist(managed_token_id!(token_identifier)),
+                )
                 .expect(tx_expect),
         );
         self

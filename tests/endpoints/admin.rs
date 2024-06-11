@@ -9,6 +9,7 @@ use multiversx_sc::{
 use multiversx_sc_scenario::{
     managed_token_id,
     scenario_model::{CheckAccount, CheckStateStep, ScQueryStep, TxExpect},
+    ExpectValue,
 };
 
 use crate::bridge_sc::bridge_sc::{
@@ -142,14 +143,12 @@ fn add_remove_token_from_whitelist() {
         None,
     );
 
-    let mut tokens = MultiValueEncoded::new();
-
-    tokens.push(managed_token_id!(ITHEUM_TOKEN_IDENTIFIER));
-
     state.world.sc_query(
         ScQueryStep::new()
-            .call(state.contract.tokens_whitelist())
-            .expect_value(tokens),
+            .call(state.contract.token_whitelist())
+            .expect_value(SingleValue::from(managed_token_id!(
+                ITHEUM_TOKEN_IDENTIFIER
+            ))),
     );
 
     state.remove_token_from_whitelist(
@@ -166,8 +165,8 @@ fn add_remove_token_from_whitelist() {
 
     state.world.sc_query(
         ScQueryStep::new()
-            .call(state.contract.tokens_whitelist())
-            .expect_value(MultiValueEncoded::new()),
+            .call(state.contract.token_whitelist())
+            .expect_value(SingleValue::from(managed_token_id!(b""))),
     );
 }
 

@@ -27,7 +27,7 @@ pub trait StorageModule {
     #[storage_mapper("fee_value")]
     fn fee_value(&self) -> SingleValueMapper<BigUint>;
 
-    #[view(getWegldContractAddress)]
-    #[storage_mapper("wegld_contract_address")]
-    fn wegld_contract_address(&self) -> SingleValueMapper<ManagedAddress>;
+    #[view(getWegldTokenIdentifier)]
+    #[storage_mapper("wegld_token_identifier")]
+    fn wegld_token_identifier(&self) -> SingleValueMapper<TokenIdentifier>;
 }

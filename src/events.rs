@@ -1,5 +1,3 @@
-use multiversx_sc::types::ManagedVec;
-
 use crate::config::State;
 
 #[multiversx_sc::module]
@@ -13,6 +11,12 @@ pub trait EventsModule {
         #[indexed] destination_address: &ManagedBuffer,
         #[indexed] destination_signature: &ManagedBuffer,
     );
+
+    #[event("addToWhitelist")]
+    fn add_to_whitelist_event(&self, #[indexed] address: &ManagedAddress);
+
+    #[event("removeFromWhitelist")]
+    fn remove_from_whitelist_event(&self, #[indexed] address: &ManagedAddress);
 
     #[event("sendFromLiquidityEvent")]
     fn send_from_liquidity_event(
@@ -28,12 +32,6 @@ pub trait EventsModule {
 
     #[event("setAdministratorEvent")]
     fn set_administrator_event(&self, #[indexed] administrator: &ManagedAddress);
-
-    #[event("addTokensToWhitelistEvent")]
-    fn add_tokens_to_whitelist_event(&self, #[indexed] tokens: &ManagedVec<TokenIdentifier>);
-
-    #[event("removeTokensFromWhitelistEvent")]
-    fn remove_tokens_from_whitelist_event(&self, #[indexed] tokens: &ManagedVec<TokenIdentifier>);
 
     #[event("setRelayerEvent")]
     fn set_relayer_event(&self, #[indexed] relayer: &ManagedAddress);
@@ -65,14 +63,20 @@ pub trait EventsModule {
         #[indexed] maximum: &BigUint,
     );
 
+    #[event("addTokenToWhitelistEvent")]
+    fn add_token_to_whitelist_event(&self, #[indexed] token: &TokenIdentifier, decimals: &u32);
+
+    #[event("removeTokenFromWhitelistEvent")]
+    fn remove_token_from_whitelist_event(&self, #[indexed] token: &TokenIdentifier);
+
     #[event("setFeeCollectorEvent")]
     fn set_fee_collector_event(&self, #[indexed] fee_collector: &ManagedAddress);
 
     #[event("setFeeValueEvent")]
     fn set_fee_value_event(&self, #[indexed] fee_value: &BigUint);
 
-    #[event("setWegldContractAddressEvent")]
-    fn set_wegld_contract_address_event(&self, #[indexed] wegld_contract_address: &ManagedAddress);
+    #[event("setWegldTokenIdentifier")]
+    fn set_wegld_token_identifier(&self, #[indexed] wegld_token_identifier: &TokenIdentifier);
 
     #[event("setRelayerStateEvent")]
     fn set_relayer_state_event(&self, #[indexed] state: &State);
