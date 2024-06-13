@@ -113,8 +113,20 @@ fn add_remove_token_from_whitelist() {
 
     state.add_token_to_whitelist(
         ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
+        ANOTHER_TOKEN_IDENTIFIER,
+        None,
+    );
+
+    state.add_token_to_whitelist(
+        ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
         ITHEUM_TOKEN_IDENTIFIER,
         None,
+    );
+
+    state.add_token_to_whitelist(
+        ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
+        ITHEUM_TOKEN_IDENTIFIER,
+        Some(TxExpect::user_error("str:Token already in whitelist")),
     );
 
     state.world.sc_query(

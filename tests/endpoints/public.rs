@@ -38,6 +38,10 @@ fn send_to_bridge_test() {
 
     state.add_to_whitelist(ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR, first_user.clone(), None);
 
+    state.remove_from_whitelist(ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR, first_user.clone(), None);
+
+    state.add_to_whitelist(ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR, first_user.clone(), None);
+
     state.send_to_liquidity(
         FIRST_USER_ADDRESS_EXPR,
         (ITHEUM_TOKEN_IDENTIFIER_EXPR, 0u64, "1_000"),
