@@ -28,8 +28,8 @@ pub trait CoreMxBridgeSc:
 
     #[upgrade]
     fn upgrade(&self) {
-        self.set_public_state_inactive();
-        self.set_relayer_state_inactive();
+        self.public_state().set(config::State::Inactive);
+        self.relayer_state().set(config::State::Inactive);
     }
 
     #[payable("*")]
@@ -66,8 +66,8 @@ pub trait CoreMxBridgeSc:
             );
 
             require!(
-                self.minimum_deposit(&deposit.token_identifier).get() <= deposit.amount
-                    && deposit.amount <= self.maximum_deposit(&deposit.token_identifier).get(),
+                self.minimum_deposit().get() <= deposit.amount
+                    && deposit.amount <= self.maximum_deposit().get(),
                 ERR_PAYMENT_AMOUNT_NOT_IN_ACCEPTED_RANGE
             );
 
@@ -105,8 +105,8 @@ pub trait CoreMxBridgeSc:
             );
 
             require!(
-                self.minimum_deposit(&deposit.token_identifier).get() <= deposit.amount
-                    && deposit.amount <= self.maximum_deposit(&deposit.token_identifier).get(),
+                self.minimum_deposit().get() <= deposit.amount
+                    && deposit.amount <= self.maximum_deposit().get(),
                 ERR_PAYMENT_AMOUNT_NOT_IN_ACCEPTED_RANGE
             );
 

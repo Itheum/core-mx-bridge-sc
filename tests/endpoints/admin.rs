@@ -2,14 +2,10 @@ use core_mx_bridge_sc::{
     config::{ProxyTrait as _, State},
     storage::ProxyTrait as _,
 };
-use multiversx_sc::{
-    imports::SingleValue,
-    types::{BigUint, MultiValueEncoded},
-};
+use multiversx_sc::{imports::SingleValue, types::BigUint};
 use multiversx_sc_scenario::{
     managed_token_id,
     scenario_model::{CheckAccount, CheckStateStep, ScQueryStep, TxExpect},
-    ExpectValue,
 };
 
 use crate::bridge_sc::bridge_sc::{
@@ -85,21 +81,6 @@ fn set_deposit_limits_test() {
 
     state.set_deposit_limits(
         ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
-        ITHEUM_TOKEN_IDENTIFIER,
-        b"10",
-        b"20",
-        Some(TxExpect::user_error("str:Token not whitelisted")),
-    );
-
-    state.add_token_to_whitelist(
-        ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
-        ITHEUM_TOKEN_IDENTIFIER,
-        None,
-    );
-
-    state.set_deposit_limits(
-        ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
-        ITHEUM_TOKEN_IDENTIFIER,
         b"20",
         b"10",
         Some(TxExpect::user_error("str:Wrong values")),
@@ -107,19 +88,12 @@ fn set_deposit_limits_test() {
 
     state.set_deposit_limits(
         FIRST_USER_ADDRESS_EXPR,
-        ITHEUM_TOKEN_IDENTIFIER,
         b"10",
         b"20",
         Some(TxExpect::user_error("str:Not privileged")),
     );
 
-    state.set_deposit_limits(
-        ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
-        ITHEUM_TOKEN_IDENTIFIER,
-        b"0",
-        b"10",
-        None,
-    );
+    state.set_deposit_limits(ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR, b"0", b"10", None);
 }
 
 #[test]

@@ -13,11 +13,11 @@ pub trait StorageModule {
 
     #[view(getMinimumDeposit)]
     #[storage_mapper("minimum_deposit")]
-    fn minimum_deposit(&self, token_identifier: &TokenIdentifier) -> SingleValueMapper<BigUint>;
+    fn minimum_deposit(&self) -> SingleValueMapper<BigUint>;
 
     #[view(getMaximumDeposit)]
     #[storage_mapper("maximum_deposit")]
-    fn maximum_deposit(&self, token_identifier: &TokenIdentifier) -> SingleValueMapper<BigUint>;
+    fn maximum_deposit(&self) -> SingleValueMapper<BigUint>;
 
     #[view(getFeeCollector)]
     #[storage_mapper("fee_collector")]

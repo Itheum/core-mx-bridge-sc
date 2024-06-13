@@ -92,21 +92,12 @@ pub trait AdminModule:
     }
 
     #[endpoint(setDepositLimits)]
-    fn set_deposit_limits(
-        &self,
-        token_identifier: TokenIdentifier,
-        minimum: BigUint,
-        maximum: BigUint,
-    ) {
+    fn set_deposit_limits(&self, minimum: BigUint, maximum: BigUint) {
         only_privileged!(self, ERR_NOT_PRIVILEGED);
-        require!(
-            self.token_whitelist().get() == token_identifier,
-            ERR_TOKEN_NOT_WHITELISTED
-        );
         require!(minimum <= maximum, ERR_WRONG_VALUES);
-        self.set_deposit_limits_event(&token_identifier, &minimum, &maximum);
-        self.minimum_deposit(&token_identifier).set(minimum);
-        self.maximum_deposit(&token_identifier).set(maximum);
+        self.set_deposit_limits_event(&minimum, &maximum);
+        self.minimum_deposit().set(minimum);
+        self.maximum_deposit().set(maximum);
     }
 
     #[endpoint(setFeeCollector)]

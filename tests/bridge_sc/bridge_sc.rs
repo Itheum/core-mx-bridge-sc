@@ -357,7 +357,6 @@ impl ContractState {
     pub fn set_deposit_limits(
         &mut self,
         caller: &str,
-        token_identifier: &[u8],
         min_deposit: &[u8],
         max_deposit: &[u8],
         expect: Option<TxExpect>,
@@ -368,7 +367,6 @@ impl ContractState {
             ScCallStep::new()
                 .from(caller)
                 .call(self.contract.set_deposit_limits(
-                    managed_token_id!(token_identifier),
                     BigUint::from(managed_buffer!(min_deposit)),
                     BigUint::from(managed_buffer!(max_deposit)),
                 ))

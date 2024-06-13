@@ -56,12 +56,7 @@ pub trait EventsModule {
     fn set_whitelist_state_event(&self, #[indexed] state: &State);
 
     #[event("setDepositLimitsEvent")]
-    fn set_deposit_limits_event(
-        &self,
-        #[indexed] token_identifier: &TokenIdentifier,
-        #[indexed] minimum: &BigUint,
-        #[indexed] maximum: &BigUint,
-    );
+    fn set_deposit_limits_event(&self, #[indexed] minimum: &BigUint, #[indexed] maximum: &BigUint);
 
     #[event("addTokenToWhitelistEvent")]
     fn add_token_to_whitelist_event(&self, #[indexed] token: &TokenIdentifier, decimals: &u32);

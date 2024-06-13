@@ -1,12 +1,12 @@
 use multiversx_sc_scenario::imports::{
-    Account, CheckAccount, CheckStateStep, ScCallStep, SetStateStep, TxExpect,
+    Account, CheckAccount, CheckStateStep, SetStateStep, TxExpect,
 };
 
 use crate::bridge_sc::bridge_sc::{
     ContractState, ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR, ANOTHER_TOKEN_IDENTIFIER_EXPR,
-    BRIDGE_CONTRACT_ADDRESS_EXPR, FIRST_USER_ADDRESS_EXPR, ITHEUM_TOKEN_IDENTIFIER,
-    ITHEUM_TOKEN_IDENTIFIER_EXPR, OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR,
-    RELAYER_BRIDGE_CONTRACT_ADDRESS_EXPR, THIRD_USER_ADDRESS_EXPR, WEGLD_TOKEN_IDENTIFIER_EXPR,
+    BRIDGE_CONTRACT_ADDRESS_EXPR, FIRST_USER_ADDRESS_EXPR, ITHEUM_TOKEN_IDENTIFIER_EXPR,
+    OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR, RELAYER_BRIDGE_CONTRACT_ADDRESS_EXPR,
+    THIRD_USER_ADDRESS_EXPR, WEGLD_TOKEN_IDENTIFIER_EXPR,
 };
 
 #[test]
@@ -88,7 +88,6 @@ fn send_to_bridge_test() {
     );
     state.set_deposit_limits(
         OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR,
-        ITHEUM_TOKEN_IDENTIFIER,
         b"0",
         b"100000000000000000000", // 100 tokens
         None,
@@ -142,7 +141,6 @@ fn send_to_bridge_require_fee_test() {
 
     state.set_deposit_limits(
         OWNER_BRIDGE_CONTRACT_ADDRESS_EXPR,
-        ITHEUM_TOKEN_IDENTIFIER,
         b"0",
         b"1000000000000000000000", // 1000 tokens
         None,
