@@ -28,10 +28,10 @@ multiversx_sc_wasm_adapter::endpoints! {
         getMaximumDeposit => maximum_deposit
         getFeeCollector => fee_collector
         getFeeValue => fee_value
-        getWegldContractAddress => wegld_contract_address
+        getWegldTokenIdentifier => wegld_token_identifier
         setAdministrator => set_administrator
         getAdministrator => administrator
-        getTokensWhitelist => tokens_whitelist
+        getTokensWhitelist => token_whitelist
         getWhitelistState => whitelist_state
         getPublicState => public_state
         getRelayerState => relayer_state
@@ -45,9 +45,9 @@ multiversx_sc_wasm_adapter::endpoints! {
         setDepositLimits => set_deposit_limits
         setFeeCollector => set_fee_collector
         setFeeValue => set_fee_value
-        setWegldContractAddress => set_wegld_contract_address
-        addTokensToWhitelist => add_tokens_to_whitelist
-        removeTokensFromWhitelist => remove_tokens_from_whitelist
+        setWegldTokenIdentifier => set_wegld_contract_address
+        addTokenToWhitelist => add_tokens_to_whitelist
+        removeTokenFromWhitelist => remove_token_from_whitelist
         addToWhitelist => add_to_whitelist
         removeFromWhitelist => remove_from_whitelist
         setRelayer => set_relayer

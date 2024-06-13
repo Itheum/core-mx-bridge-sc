@@ -13,11 +13,11 @@ pub trait StorageModule {
 
     #[view(getMinimumDeposit)]
     #[storage_mapper("minimum_deposit")]
-    fn minimum_deposit(&self, token_identifier: &TokenIdentifier) -> SingleValueMapper<BigUint>;
+    fn minimum_deposit(&self) -> SingleValueMapper<BigUint>;
 
     #[view(getMaximumDeposit)]
     #[storage_mapper("maximum_deposit")]
-    fn maximum_deposit(&self, token_identifier: &TokenIdentifier) -> SingleValueMapper<BigUint>;
+    fn maximum_deposit(&self) -> SingleValueMapper<BigUint>;
 
     #[view(getFeeCollector)]
     #[storage_mapper("fee_collector")]
@@ -27,7 +27,7 @@ pub trait StorageModule {
     #[storage_mapper("fee_value")]
     fn fee_value(&self) -> SingleValueMapper<BigUint>;
 
-    #[view(getWegldContractAddress)]
-    #[storage_mapper("wegld_contract_address")]
-    fn wegld_contract_address(&self) -> SingleValueMapper<ManagedAddress>;
+    #[view(getWegldTokenIdentifier)]
+    #[storage_mapper("wegld_token_identifier")]
+    fn wegld_token_identifier(&self) -> SingleValueMapper<TokenIdentifier>;
 }

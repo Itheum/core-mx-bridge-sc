@@ -84,7 +84,7 @@ pub trait ConfigModule: storage::StorageModule + events::EventsModule {
                 is_ready = false;
             }
 
-            if self.wegld_contract_address().is_empty() {
+            if self.wegld_token_identifier().is_empty() {
                 is_ready = false;
             }
         }
@@ -92,7 +92,7 @@ pub trait ConfigModule: storage::StorageModule + events::EventsModule {
         if self.relayer().is_empty() {
             is_ready = false;
         }
-        if self.tokens_whitelist().is_empty() {
+        if self.token_whitelist().is_empty() {
             is_ready = false;
         }
         is_ready
@@ -103,8 +103,8 @@ pub trait ConfigModule: storage::StorageModule + events::EventsModule {
     fn administrator(&self) -> SingleValueMapper<ManagedAddress>;
 
     #[view(getTokensWhitelist)]
-    #[storage_mapper("tokens_whitelist")]
-    fn tokens_whitelist(&self) -> UnorderedSetMapper<TokenIdentifier>;
+    #[storage_mapper("token_whitelist")]
+    fn token_whitelist(&self) -> SingleValueMapper<TokenIdentifier>;
 
     #[storage_mapper("whitelist")]
     fn whitelist(&self) -> WhitelistMapper<ManagedAddress>;

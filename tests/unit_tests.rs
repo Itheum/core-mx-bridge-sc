@@ -9,11 +9,13 @@ use core_mx_bridge_sc::{
 use multiversx_sc::types::{BigUint, TokenIdentifier};
 use multiversx_sc_scenario::{
     api::SingleTxApi,
-    managed_address,
+    managed_address, managed_token_id,
     scenario_model::{AddressValue, TxExpect},
 };
 
-use crate::bridge_sc::bridge_sc::{ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR, ITHEUM_TOKEN_IDENTIFIER};
+use crate::bridge_sc::bridge_sc::{
+    ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR, ITHEUM_TOKEN_IDENTIFIER, ITHEUM_TOKEN_IDENTIFIER_EXPR,
+};
 
 mod bridge_sc;
 mod endpoints;
@@ -82,8 +84,8 @@ fn contract_is_ready_test() {
     bridge_sc.fee_value().set(BigUint::from(10u64));
 
     bridge_sc
-        .tokens_whitelist()
-        .insert(TokenIdentifier::from(ITHEUM_TOKEN_IDENTIFIER));
+        .token_whitelist()
+        .set(TokenIdentifier::from(ITHEUM_TOKEN_IDENTIFIER));
 
     check = bridge_sc.contract_is_ready();
 
@@ -101,11 +103,8 @@ fn contract_is_ready_test() {
     assert_eq!(check, false);
 
     bridge_sc
-        .wegld_contract_address()
-        .set(managed_address!(&AddressValue::from(
-            ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR
-        )
-        .to_address()));
+        .wegld_token_identifier()
+        .set(managed_token_id!(ITHEUM_TOKEN_IDENTIFIER_EXPR));
 
     check = bridge_sc.contract_is_ready();
 

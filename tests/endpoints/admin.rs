@@ -2,10 +2,7 @@ use core_mx_bridge_sc::{
     config::{ProxyTrait as _, State},
     storage::ProxyTrait as _,
 };
-use multiversx_sc::{
-    imports::SingleValue,
-    types::{BigUint, MultiValueEncoded},
-};
+use multiversx_sc::{imports::SingleValue, types::BigUint};
 use multiversx_sc_scenario::{
     managed_token_id,
     scenario_model::{CheckAccount, CheckStateStep, ScQueryStep, TxExpect},
@@ -84,21 +81,6 @@ fn set_deposit_limits_test() {
 
     state.set_deposit_limits(
         ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
-        ITHEUM_TOKEN_IDENTIFIER,
-        b"10",
-        b"20",
-        Some(TxExpect::user_error("str:Token not whitelisted")),
-    );
-
-    state.add_token_to_whitelist(
-        ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
-        ITHEUM_TOKEN_IDENTIFIER,
-        None,
-    );
-
-    state.set_deposit_limits(
-        ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
-        ITHEUM_TOKEN_IDENTIFIER,
         b"20",
         b"10",
         Some(TxExpect::user_error("str:Wrong values")),
@@ -106,19 +88,12 @@ fn set_deposit_limits_test() {
 
     state.set_deposit_limits(
         FIRST_USER_ADDRESS_EXPR,
-        ITHEUM_TOKEN_IDENTIFIER,
         b"10",
         b"20",
         Some(TxExpect::user_error("str:Not privileged")),
     );
 
-    state.set_deposit_limits(
-        ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
-        ITHEUM_TOKEN_IDENTIFIER,
-        b"0",
-        b"10",
-        None,
-    );
+    state.set_deposit_limits(ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR, b"0", b"10", None);
 }
 
 #[test]
@@ -138,18 +113,28 @@ fn add_remove_token_from_whitelist() {
 
     state.add_token_to_whitelist(
         ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
+        ANOTHER_TOKEN_IDENTIFIER,
+        None,
+    );
+
+    state.add_token_to_whitelist(
+        ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
         ITHEUM_TOKEN_IDENTIFIER,
         None,
     );
 
-    let mut tokens = MultiValueEncoded::new();
-
-    tokens.push(managed_token_id!(ITHEUM_TOKEN_IDENTIFIER));
+    state.add_token_to_whitelist(
+        ADMIN_BRIDGE_CONTRACT_ADDRESS_EXPR,
+        ITHEUM_TOKEN_IDENTIFIER,
+        Some(TxExpect::user_error("str:Token already in whitelist")),
+    );
 
     state.world.sc_query(
         ScQueryStep::new()
-            .call(state.contract.tokens_whitelist())
-            .expect_value(tokens),
+            .call(state.contract.token_whitelist())
+            .expect_value(SingleValue::from(managed_token_id!(
+                ITHEUM_TOKEN_IDENTIFIER
+            ))),
     );
 
     state.remove_token_from_whitelist(
@@ -166,8 +151,8 @@ fn add_remove_token_from_whitelist() {
 
     state.world.sc_query(
         ScQueryStep::new()
-            .call(state.contract.tokens_whitelist())
-            .expect_value(MultiValueEncoded::new()),
+            .call(state.contract.token_whitelist())
+            .expect_value(SingleValue::from(managed_token_id!(b""))),
     );
 }
 

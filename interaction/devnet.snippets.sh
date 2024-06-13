@@ -52,6 +52,26 @@ upgrade(){
 
 
 
+addTokenToWhitelist(){
+    # $1 = token
+    # $2 = decimals
+
+    token="0x$(echo -n ${1} | xxd -p -u | tr -d '\n')"
+
+    mxpy --verbose contract call ${ADDRESS} \
+    --recall-nonce \
+    --pem=${WALLET} \
+    --gas-limit=6000000 \
+    --function "addTokenToWhitelist" \
+    --arguments $token $2 \
+    --proxy ${PROXY} \
+    --chain ${CHAIN_ID} \
+    --send || return
+
+}
+
+
+
 setAdministrator(){
     # $1 = address
 
@@ -88,8 +108,6 @@ setFeeCollector(){
 setFeeValue(){
     # $1 = value
 
-  
-
     mxpy --verbose contract call ${ADDRESS} \
     --recall-nonce \
     --pem=${WALLET} \
@@ -102,17 +120,37 @@ setFeeValue(){
 
 }
 
-setWegldContractAddress(){
-    # $1 = address
 
-    address="0x$(mxpy wallet bech32 --decode ${1})"
+setDepositLimits(){
+    # $1 = min
+    # $2 = max
+
+   
 
     mxpy --verbose contract call ${ADDRESS} \
     --recall-nonce \
     --pem=${WALLET} \
     --gas-limit=6000000 \
-    --function "setWegldContractAddress" \
-    --arguments $address \
+    --function "setDepositLimits" \
+    --arguments $1 $2 \
+    --proxy ${PROXY} \
+    --chain ${CHAIN_ID} \
+    --send || return
+
+
+}
+
+setWegldTokenIdentifier(){
+    # $1 = token
+
+    token="0x$(echo -n ${1} | xxd -p -u | tr -d '\n')"
+
+    mxpy --verbose contract call ${ADDRESS} \
+    --recall-nonce \
+    --pem=${WALLET} \
+    --gas-limit=6000000 \
+    --function "setWegldTokenIdentifier" \
+    --arguments $token \
     --proxy ${PROXY} \
     --chain ${CHAIN_ID} \
     --send || return

@@ -11,17 +11,8 @@ path = "src/lib.rs"
 [dependencies.multiversx-sc]
 version = "0.50.3"
 
-[dependencies.multiversx-sc-modules]
-version = "0.50.3"
-
-[dev-dependencies]
-multiversx-wegld-swap-sc = "0.50.3"
-
-
 [dev-dependencies.multiversx-sc-scenario]
 version = "0.50.3"
-
-
 
 [workspace]
 members = [
