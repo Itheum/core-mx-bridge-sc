@@ -10,9 +10,9 @@ Understanding this document is also easier if one knows how [ESDT token transact
 
 ## Itheum deployed contract addresses
 
-| Devnet                                                         | Mainnet |
-| -------------------------------------------------------------- | ------- |
-| erd1qqqqqqqqqqqqqpgq2ydact8802td4n7k5zu86zdjz7r65esaw3wq2884uu |         |
+| Devnet                                                         | Mainnet                                                        |
+| -------------------------------------------------------------- | -------------------------------------------------------------- |
+| erd1qqqqqqqqqqqqqpgq2ydact8802td4n7k5zu86zdjz7r65esaw3wq2884uu | erd1qqqqqqqqqqqqqpgqkf030zmh6v83t9up9rg9s7d75vwd2pmhc77qv5jfga |
 
 ## Endpoints
 
@@ -22,12 +22,10 @@ See `devnet.snippets.sh` for list of available endpoints for user testing.
 
 ### Setting up dev environment (project development bootstrap) + how to build (and upgrade)
 
-- Uses `multiversx-sc-* 0.50.3` (In v2.0.0, we used0.50.3) SDK libs (see Cargo.toml)
-- Building requires minimum **mxpy 9.5.1** (In v2.0.0, we used mxpy 9.5.1). Check version using `mxpy --version`
-- To build the project, requires minimum Rust version `1.78.0` (In v2.0.0, we used 1.78.0). Check your Rust version by running `rustc --version`. To update your Rust, run `rustup update`. To set to nightly run `rustup default stable`. Note that `mxpy deps install rust --overwrite` also brings in it's own compatible rust version so running `rustup default stable` might have a higher rust version than what is used via `mxpy deps install rust --overwrite`.
+- Uses `multiversx-sc-* 0.50.3` (In v2.0.0, we usedXXX) SDK libs (see Cargo.toml)
+- Building requires minimum **mxpy 9.6.0** (In v2.0.0, we used mxpy XXX). Check version using `mxpy --version`
+- To build the project, requires minimum Rust version `1.79.0` (In v2.0.0, we used 1.79.0). Check your Rust version by running `rustc --version`. To update your Rust, run `rustup update`. To set to nightly run `rustup default stable`. Note that `mxpy deps install rust --overwrite` also brings in it's own compatible rust version so running `rustup default stable` might have a higher rust version than what is used via `mxpy deps install rust --overwrite`.
 - Uses `multiversx-sc-*0.50.3` (In v1.0.0, we used0.50.3) SDK libs (see Cargo.toml)
-- Building requires minimum **mxpy 9.5.1** (In v1.0.0, we used mxpy 9.5.1). Check version using `mxpy --version`
-- To build the project, requires minimum Rust version `1.78.0` (In v1.0.0, we used 1.78.0-nightly). Check your Rust version by running `rustc --version`. To update your Rust, run `rustup update`. To set to nightly run `rustup default stable`. Note that `mxpy deps install rust --overwrite` also brings in it's own compatible rust version so running `rustup default nightly` might have a higher rust version than what is used via `mxpy deps install rust --overwrite`.
 
 ```
 rustup default stable
@@ -94,11 +92,11 @@ After deployment, one can interact with the smart contract and test its function
 **Step 2 (Final build + Code Hash):**
 Once the main commit is locked in, we can then produce the code hash and build to deploy to devnet 1st (for final testing) and then to mainnet (after sending the code hash to the auditor)
 
-1. Make sure your mxpy version is >= 6 (In v1.0.0, we used mxpy 9.5.1).
+1. Make sure your mxpy version is >= 6 (In v1.0.0, we used mxpy 9.6.0).
 2. If Cargo.lock is in gitignore, remove it, build the contract and make a new commit. Otherwise this step can be skipped. (see Step 1 and repeat if needed)
 3. Run the following in the root of the repository (run the latest Docker client in your computer. Used `Docker Desktop 4.18.0 (104112) on MacOS`):
 
-`mxpy contract reproducible-build --docker-image="multiversx/sdk-rust-contract-builder:v6.1.1"`
+`mxpy contract reproducible-build --docker-image="multiversx/sdk-rust-contract-builder:v8.0.0"`
 
 Note that if you already have a output-docker from a previous build and deploy then delete this folder.
 

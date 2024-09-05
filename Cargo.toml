@@ -1,7 +1,7 @@
 [package]
 name = "core-mx-bridge-sc"
-version = "0.1.0"
-authors = ["you"]
+version = "1.0.0"
+authors = ["Itheum"]
 edition = "2021"
 publish = false
 

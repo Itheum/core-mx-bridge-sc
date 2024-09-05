@@ -22,6 +22,6 @@ mxpy.data-storage.json
 
 deployOutputMainnet
 deploy-mainnet.interaction.json
-
+*.pem
 
 .vscode
